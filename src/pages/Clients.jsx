@@ -1,27 +1,11 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { createPageUrl } from "../utils";
+import { Link, useNavigate } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Edit, Eye, Loader2, MoreHorizontal, Search, UserPlus } from "lucide-react";
+import { toast } from "sonner";
+
 import { UsersApi } from "../api/users";
-import { PlansApi } from "../api/PlansApi";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AppLayout from "../components/app/AppLayout";
-import { Label } from "../components/ui/label";
-import { Card } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Badge } from "../components/ui/badge";
-import { api } from "../lib/api";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "../components/ui/dialog";
-
-import { useNavigate } from "react-router-dom";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,7 +16,24 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "../components/ui/alert-dialog";
-
+import { Badge } from "../components/ui/badge";
+import { Button } from "../components/ui/button";
+import { Card } from "../components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../components/ui/dropdown-menu";
+import { Input } from "../components/ui/input";
+import { Label } from "../components/ui/label";
 import {
   Table,
   TableBody,
@@ -41,33 +42,17 @@ import {
   TableHeader,
   TableRow,
 } from "../components/ui/table";
-
-import { toast } from "sonner";
-
-import {
-  MoreHorizontal,
-  Edit,
-  Trash2,
-  Eye,
-  Loader2,
-  UserPlus,
-} from "lucide-react";
-
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "../components/ui/dropdown-menu";
-
+import { api } from "../lib/api";
 import { cn } from "../lib/utils";
+import { createPageUrl } from "../utils";
 
 function ClientsContent() {
   const [search, setSearch] = useState("");
   const [editingUser, setEditingUser] = useState(null);
   const [deletingUser, setDeletingUser] = useState(null);
   const [creatingUser, setCreatingUser] = useState(false);
-const navigate = useNavigate();
+
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const { data: users = [], isLoading } = useQuery({
@@ -75,219 +60,159 @@ const navigate = useNavigate();
     queryFn: UsersApi.list,
   });
 
-  const { data: plans = [] } = useQuery({
-    queryKey: ["planes"],
-    queryFn: PlansApi.list,
-  });
-
-  const filteredUsers = users.filter((u) =>
-    `${u.nombre ?? ""} ${u.apellido ?? ""} ${u.email ?? ""} ${u.cuit ?? ""}`
+  const filteredUsers = users.filter((user) =>
+    `${user.nombre ?? ""} ${user.apellido ?? ""} ${user.email ?? ""} ${user.tel ?? ""}`
       .toLowerCase()
       .includes(search.toLowerCase())
   );
 
-  const getActivePlans = (user) =>
-    (user?.planes || []).filter((p) => p?.activo && p?.plan);
-
-  const getPlanSummary = (user) => {
-    const activePlans = getActivePlans(user);
-    if (activePlans.length === 0) return [];
-    return activePlans.map((up) => up.plan.nombre);
-  };
-
-  const updateMutation = useMutation({
-    mutationFn: async ({ id, data }) => {
-      const updatedUser = await UsersApi.update(id, data);
-
-
-      return updatedUser;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      setEditingUser(null);
-      toast.success("Usuario actualizado");
-    },
-    onError: (error) => {
-      console.error(error);
-      toast.error(error.message || "Error al actualizar usuario");
-    },
-  });
-
   const createMutation = useMutation({
-    mutationFn: async ({ userData }) => {
-      const createdUser = await UsersApi.create(userData);
-
-      const createdId =
-        createdUser?.idUsuario ||
-        createdUser?.id ||
-        createdUser?.data?.idUsuario ||
-        createdUser?.data?.id;
-
-      return createdUser;
-    },
+    mutationFn: ({ userData }) => UsersApi.create(userData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       setCreatingUser(false);
-      toast.success("Usuario creado");
+      toast.success("Cliente creado");
     },
     onError: (error) => {
       console.error(error);
-      toast.error(error.message || "Error al crear usuario");
+      toast.error(error.message || "Error al crear cliente");
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => UsersApi.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["users"] });
+      setEditingUser(null);
+      toast.success("Cliente actualizado");
+    },
+    onError: (error) => {
+      console.error(error);
+      toast.error(error.message || "Error al actualizar cliente");
     },
   });
 
   const toggleEstadoMutation = useMutation({
-    mutationFn: async ({ id, estado }) => {
-      return api.patch(`/usuarios/${id}/estado`, null, {
+    mutationFn: ({ id, estado }) =>
+      api.patch(`/usuarios/${id}/estado`, null, {
         params: { estado },
-      });
-    },
-
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
       setDeletingUser(null);
       toast.success("Estado actualizado");
     },
-
     onError: (error) => {
       console.error(error);
       toast.error("Error al cambiar estado");
     },
   });
 
-
-  const consultasExtraMutation = useMutation({
-    mutationFn: ({ id, cantidad }) => UsersApi.addConsultasExtra(id, cantidad),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
-      toast.success("Consultas extra agregadas");
-    },
-    onError: (error) => {
-      console.error(error);
-      toast.error("Error al agregar consultas extra");
-    },
-  });
-
-  const handleAgregarConsultas = (idUsuario) => {
-    const cantidad = prompt("Cantidad de consultas extra:");
-    if (!cantidad) return;
-
-    consultasExtraMutation.mutate({
-      id: idUsuario,
-      cantidad: Number(cantidad),
-    });
-  };
-
   return (
     <div className="space-y-6">
-      <div className="flex justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Clientes</h1>
-          <p className="text-slate-500">Gestiona los usuarios</p>
-        </div>
+      <section className="relative overflow-hidden rounded-[2rem] border border-orange-500/10 bg-gradient-to-br from-zinc-950 via-zinc-900 to-black px-6 py-7 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.16),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(234,179,8,0.10),transparent_30%)]" />
+        <div className="relative flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-[0.28em] text-orange-300/80">
+              Gestion de socios
+            </p>
+            <h1 className="text-3xl font-bold tracking-tight text-white">
+              Clientes
+            </h1>
+            <p className="mt-2 max-w-2xl text-sm text-zinc-400">
+              Organiza a tus alumnos con una visual mas clara, energica y alineada
+              a la operacion diaria del gimnasio.
+            </p>
+          </div>
 
-        <Button
-          onClick={() => setCreatingUser(true)}
-          className="bg-blue-500 text-white"
-        >
-          <UserPlus className="w-4 h-4 mr-2" />
-          Crear usuario
-        </Button>
+          <Button
+            onClick={() => setCreatingUser(true)}
+            className="border border-orange-400/20 bg-gradient-to-r from-orange-500 via-amber-400 to-orange-500 font-semibold text-black shadow-[0_12px_30px_rgba(249,115,22,0.35)] hover:from-orange-400 hover:via-amber-300 hover:to-orange-400"
+          >
+            <UserPlus className="mr-2 h-4 w-4" />
+            Agregar cliente
+          </Button>
+        </div>
+      </section>
+
+      <div className="hidden justify-between md:flex">
+        <div>
+          <h2 className="text-sm font-medium uppercase tracking-[0.24em] text-zinc-500">
+            Base de clientes
+          </h2>
+        </div>
       </div>
 
       <Dialog open={creatingUser} onOpenChange={setCreatingUser}>
-        <DialogContent className="sm:max-w-[500px] max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-h-[85vh] overflow-y-auto border-orange-500/10 bg-zinc-950 text-zinc-100 sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Crear usuario</DialogTitle>
+            <DialogTitle className="text-white">Agregar cliente</DialogTitle>
           </DialogHeader>
 
           <form
             className="space-y-4"
-            onSubmit={(e) => {
-              e.preventDefault();
-              const fd = new FormData(e.target);
-
-              const userData = {
-                nombre: fd.get("nombre"),
-                apellido: fd.get("apellido"),
-                email: fd.get("email"),
-                password: fd.get("password"),
-                cuit: fd.get("cuit"),
-                razonSocial: fd.get("razonSocial"),
-                tel: fd.get("tel"),
-                direccion: fd.get("direccion") || "",
-                estado: 1,
-                roles: [
-                  {
-                    idRol: Number(fd.get("rolId")),
-                  },
-                ],
-              };
-
-              const planId = fd.get("planId");
-              const fechaInicio = fd.get("fechaInicio");
-              const fechaFin = fd.get("fechaFin");
-
-              const calcularMeses = (desde, hasta) => {
-                if (!desde || !hasta) return 1;
-
-                const d1 = new Date(desde);
-                const d2 = new Date(hasta);
-
-                const diffMeses =
-                  (d2.getFullYear() - d1.getFullYear()) * 12 +
-                  (d2.getMonth() - d1.getMonth());
-
-                return diffMeses > 0 ? diffMeses : 1;
-              };
-
-              const planData = planId
-                ? {
-                  idPlan: Number(planId),
-                  meses: calcularMeses(fechaInicio, fechaFin),
-                }
-                : null;
+            onSubmit={(event) => {
+              event.preventDefault();
+              const fd = new FormData(event.target);
 
               createMutation.mutate({
-                userData,
-                planData,
+                userData: {
+                  nombre: fd.get("nombre"),
+                  apellido: fd.get("apellido"),
+                  tel: fd.get("tel"),
+                  email: fd.get("email"),
+                  estado: 1,
+                  roles: [{ idRol: 2 }],
+                },
               });
             }}
           >
-            <Input name="nombre" placeholder="Nombre" required />
-            <Input name="apellido" placeholder="Apellido" required />
-            <Input name="email" placeholder="Email" required />
-            <Input name="password" type="password" placeholder="Password" />
-            <Input name="cuit" placeholder="CUIT" />
-            <Input name="razonSocial" placeholder="Razón Social" />
-            <Input name="tel" placeholder="Teléfono" />
-            <Input name="direccion" placeholder="Dirección" />
-             <div className="space-y-2">
-              <Label>Rol</Label>
-              <select
-                name="rolId"
-                defaultValue="2"
-                className="w-full border rounded-md p-2"
-              >
-                <option value="2">Usuario</option>
-                <option value="1">Administrador</option>
-              </select>
-            </div>
+            <Input
+              name="nombre"
+              placeholder="Nombre"
+              required
+              className="h-11 rounded-xl border-white/10 bg-zinc-900 text-white placeholder:text-zinc-500 focus-visible:ring-orange-400"
+            />
+            <Input
+              name="apellido"
+              placeholder="Apellido"
+              required
+              className="h-11 rounded-xl border-white/10 bg-zinc-900 text-white placeholder:text-zinc-500 focus-visible:ring-orange-400"
+            />
+            <Input
+              name="tel"
+              placeholder="Telefono"
+              required
+              className="h-11 rounded-xl border-white/10 bg-zinc-900 text-white placeholder:text-zinc-500 focus-visible:ring-orange-400"
+            />
+            <Input
+              name="email"
+              type="email"
+              placeholder="Mail"
+              required
+              className="h-11 rounded-xl border-white/10 bg-zinc-900 text-white placeholder:text-zinc-500 focus-visible:ring-orange-400"
+            />
 
             <DialogFooter>
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => setCreatingUser(false)}
+                className="border-white/10 bg-transparent text-zinc-300 hover:bg-zinc-900 hover:text-white"
               >
                 Cancelar
               </Button>
 
-              <Button type="submit" disabled={createMutation.isPending}>
+              <Button
+                type="submit"
+                disabled={createMutation.isPending}
+                className="bg-gradient-to-r from-orange-500 to-amber-400 font-semibold text-black hover:from-orange-400 hover:to-amber-300"
+              >
                 {createMutation.isPending && (
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}
-                Crear usuario
+                Guardar cliente
               </Button>
             </DialogFooter>
           </form>
@@ -295,100 +220,73 @@ const navigate = useNavigate();
       </Dialog>
 
       <Dialog open={!!editingUser} onOpenChange={() => setEditingUser(null)}>
-        <DialogContent className="sm:max-w-[500px] max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-h-[85vh] overflow-y-auto border-orange-500/10 bg-zinc-950 text-zinc-100 sm:max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Editar usuario</DialogTitle>
+            <DialogTitle className="text-white">Editar cliente</DialogTitle>
           </DialogHeader>
 
           {editingUser && (
             <form
               className="space-y-4"
-              onSubmit={(e) => {
-                e.preventDefault();
-                const fd = new FormData(e.target);
+              onSubmit={(event) => {
+                event.preventDefault();
+                const fd = new FormData(event.target);
 
                 updateMutation.mutate({
                   id: editingUser.idUsuario,
                   data: {
                     nombre: fd.get("nombre"),
                     apellido: fd.get("apellido"),
-                    password: fd.get("password"),
-                    direccion: fd.get("direccion"),
-                    email: fd.get("email"),
-                    cuit: fd.get("cuit"),
-                    razonSocial: fd.get("razonSocial"),
                     tel: fd.get("tel"),
+                    email: fd.get("email"),
                     roles: [
                       {
-                        idRol: Number(fd.get("rolId")),
+                        idRol: editingUser?.roles?.[0]?.idRol ?? 2,
                       },
                     ],
                   },
-                  
                 });
               }}
             >
               <div>
-                <Label>Nombre</Label>
-                <Input name="nombre" defaultValue={editingUser.nombre} />
-              </div>
-
-              <div>
-                <Label>Apellido</Label>
-                <Input name="apellido" defaultValue={editingUser.apellido} />
-              </div>
-
-              <div>
-                <Label>Email</Label>
-                <Input name="email" defaultValue={editingUser.email} />
-              </div>
-
-              <div>
-                <Label>Contraseña</Label>
+                <Label className="text-zinc-300">Nombre</Label>
                 <Input
-                  name="password"
-                  type="text"
-                  defaultValue={editingUser.password ?? ""}
-                  placeholder="Contraseña"
+                  name="nombre"
+                  defaultValue={editingUser.nombre}
+                  required
+                  className="mt-2 h-11 rounded-xl border-white/10 bg-zinc-900 text-white placeholder:text-zinc-500 focus-visible:ring-orange-400"
                 />
               </div>
 
               <div>
-                <Label>CUIT</Label>
-                <Input name="cuit" defaultValue={editingUser.cuit} />
-              </div>
-
-              <div>
-                <Label>Razón Social</Label>
+                <Label className="text-zinc-300">Apellido</Label>
                 <Input
-                  name="razonSocial"
-                  defaultValue={editingUser.razonSocial}
+                  name="apellido"
+                  defaultValue={editingUser.apellido}
+                  required
+                  className="mt-2 h-11 rounded-xl border-white/10 bg-zinc-900 text-white placeholder:text-zinc-500 focus-visible:ring-orange-400"
                 />
               </div>
 
               <div>
-                <Label>Dirección</Label>
+                <Label className="text-zinc-300">Telefono</Label>
                 <Input
-                  name="direccion"
-                  defaultValue={editingUser.direccion ?? ""}
+                  name="tel"
+                  defaultValue={editingUser.tel}
+                  required
+                  className="mt-2 h-11 rounded-xl border-white/10 bg-zinc-900 text-white placeholder:text-zinc-500 focus-visible:ring-orange-400"
                 />
               </div>
 
               <div>
-                <Label>Teléfono</Label>
-                <Input name="tel" defaultValue={editingUser.tel} />
-              </div>
-
-              <div className="space-y-2">
-                <Label>Rol</Label>
-                <select
-                  name="rolId"
-                  defaultValue={editingUser?.roles?.[0]?.idRol ?? 2}
-                  className="w-full border rounded-md p-2"
-                >
-                  <option value="2">Usuario</option>
-                  <option value="1">Administrador</option>
-                </select>
+                <Label className="text-zinc-300">Mail</Label>
+                <Input
+                  name="email"
+                  type="email"
+                  defaultValue={editingUser.email}
+                  required
+                  className="mt-2 h-11 rounded-xl border-white/10 bg-zinc-900 text-white placeholder:text-zinc-500 focus-visible:ring-orange-400"
+                />
               </div>
 
               <DialogFooter>
@@ -396,13 +294,18 @@ const navigate = useNavigate();
                   type="button"
                   variant="outline"
                   onClick={() => setEditingUser(null)}
+                  className="border-white/10 bg-transparent text-zinc-300 hover:bg-zinc-900 hover:text-white"
                 >
                   Cancelar
                 </Button>
 
-                <Button type="submit" disabled={updateMutation.isPending}>
+                <Button
+                  type="submit"
+                  disabled={updateMutation.isPending}
+                  className="bg-gradient-to-r from-orange-500 to-amber-400 font-semibold text-black hover:from-orange-400 hover:to-amber-300"
+                >
                   {updateMutation.isPending && (
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   )}
                   Guardar cambios
                 </Button>
@@ -412,118 +315,125 @@ const navigate = useNavigate();
         </DialogContent>
       </Dialog>
 
-      <Card className="p-4">
-        <Input
-          placeholder="Buscar por nombre, email o CUIT..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
+      <Card className="border-orange-500/10 bg-zinc-950/80 p-4 shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+        <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-zinc-900/90 px-4 py-3">
+          <Search className="h-4 w-4 text-orange-300" />
+          <Input
+            placeholder="Buscar por nombre, apellido, mail o telefono..."
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            className="h-auto border-0 bg-transparent px-0 py-0 text-white shadow-none placeholder:text-zinc-500 focus-visible:ring-0"
+          />
+        </div>
       </Card>
 
-      <Card>
+      <Card className="overflow-hidden border-orange-500/10 bg-zinc-950/85 shadow-[0_24px_60px_rgba(0,0,0,0.32)]">
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Apellido</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>CUIT</TableHead>
-              <TableHead>Razón Social</TableHead>
-              <TableHead>Teléfono</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead>Rol</TableHead>
+          <TableHeader className="bg-zinc-900/90">
+            <TableRow className="border-white/10 hover:bg-transparent">
+              <TableHead className="h-12 text-zinc-400">Nombre</TableHead>
+              <TableHead className="text-zinc-400">Apellido</TableHead>
+              <TableHead className="text-zinc-400">Mail</TableHead>
+              <TableHead className="text-zinc-400">Telefono</TableHead>
+              <TableHead className="text-zinc-400">Estado</TableHead>
+              <TableHead className="text-zinc-400">Rol</TableHead>
               <TableHead />
             </TableRow>
           </TableHeader>
 
           <TableBody>
             {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={10}>Cargando...</TableCell>
+              <TableRow className="border-white/10">
+                <TableCell colSpan={7} className="py-10 text-center text-zinc-400">
+                  Cargando...
+                </TableCell>
               </TableRow>
             ) : (
-              filteredUsers.map((u) => {
-                const planNames = getPlanSummary(u);
-
-                return (
-                  <TableRow key={u.idUsuario}>
-                    <TableCell>{u.nombre}</TableCell>
-                    <TableCell>{u.apellido}</TableCell>
-                    <TableCell>{u.email}</TableCell>
-                    <TableCell>{u.cuit || "-"}</TableCell>
-                    <TableCell>{u.razonSocial || "-"}</TableCell>
-                    <TableCell>{u.tel || "-"}</TableCell>
-
-            
-                    <TableCell>
-                      <Badge
-                        className={cn(
-                          u.estado === 1
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                        )}
-                      >
-                        {u.estado === 1 ? "Activo" : "Inactivo"}
-                      </Badge>
-                    </TableCell>
-
-                    <TableCell>
-                      {u.roles?.[0]?.idRol === 1 ? (
-                        <Badge className="bg-purple-100 text-purple-700">
-                          ADMIN
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline">USER</Badge>
+              filteredUsers.map((user) => (
+                <TableRow
+                  key={user.idUsuario}
+                  className="border-white/10 text-zinc-100 transition-colors hover:bg-white/[0.03]"
+                >
+                  <TableCell className="font-medium text-white">{user.nombre}</TableCell>
+                  <TableCell>{user.apellido}</TableCell>
+                  <TableCell className="text-zinc-300">{user.email || "-"}</TableCell>
+                  <TableCell className="text-zinc-300">{user.tel || "-"}</TableCell>
+                  <TableCell>
+                    <Badge
+                      className={cn(
+                        user.estado === 1
+                          ? "border border-emerald-500/20 bg-emerald-500/15 text-emerald-300"
+                          : "border border-red-500/20 bg-red-500/15 text-red-300"
                       )}
-                    </TableCell>
+                    >
+                      {user.estado === 1 ? "Activo" : "Inactivo"}
+                    </Badge>
+                  </TableCell>
 
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="icon">
-                            <MoreHorizontal />
-                          </Button>
-                        </DropdownMenuTrigger>
+                  <TableCell>
+                    {user.roles?.[0]?.idRol === 1 ? (
+                      <Badge className="border border-orange-500/20 bg-orange-500/15 text-orange-300">
+                        ADMIN
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="border-white/10 bg-zinc-900 text-zinc-300"
+                      >
+                        CLIENTE
+                      </Badge>
+                    )}
+                  </TableCell>
 
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => setEditingUser(u)}>
-                            <Edit className="w-4 h-4 mr-2" />
-                            Editar
-                          </DropdownMenuItem>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-zinc-400 hover:bg-orange-500/10 hover:text-orange-200"
+                        >
+                          <MoreHorizontal />
+                        </Button>
+                      </DropdownMenuTrigger>
 
-                          <DropdownMenuItem asChild>
-                            <Link
-                              to={`${createPageUrl("ClientDetail")}?id=${u.idUsuario}`}
-                            >
-                              <Eye className="w-4 h-4 mr-2" />
-                              Ver
-                            </Link>
+                      <DropdownMenuContent
+                        align="end"
+                        className="border-orange-500/10 bg-zinc-950 text-zinc-100"
+                      >
+                        <DropdownMenuItem onClick={() => setEditingUser(user)}>
+                          <Edit className="mr-2 h-4 w-4" />
+                          Editar
+                        </DropdownMenuItem>
 
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={() => navigate(`/user-plans/${u.idUsuario}`)}
+                        <DropdownMenuItem asChild>
+                          <Link
+                            to={`${createPageUrl("ClientDetail")}?id=${user.idUsuario}`}
                           >
-                            📊 Administrar planes
-                          </DropdownMenuItem>
-                          {/* 
-                          <DropdownMenuItem
-                            onClick={() => handleAgregarConsultas(u.idUsuario)}
-                          >
-                            ➕ Consultas extra
-                          </DropdownMenuItem> */}
-                          <DropdownMenuItem
-                            onClick={() => setDeletingUser(u)}
-                            className={u.estado === 1 ? "text-red-600" : "text-green-600"}
-                          >
-                            {/* <Trash2 className="w-4 h-4 mr-2" /> */}
-                            {u.estado === 1 ? "Dar de baja" : "Dar de alta"}
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                );
-              })
+                            <Eye className="mr-2 h-4 w-4" />
+                            Ver
+                          </Link>
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem
+                          onClick={() => navigate(`/user-plans/${user.idUsuario}`)}
+                        >
+                          Administrar planes
+                        </DropdownMenuItem>
+
+                        <DropdownMenuItem
+                          onClick={() => setDeletingUser(user)}
+                          className={
+                            user.estado === 1 ? "text-red-400" : "text-emerald-400"
+                          }
+                        >
+                          {user.estado === 1 ? "Dar de baja" : "Dar de alta"}
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
+                </TableRow>
+              ))
             )}
           </TableBody>
         </Table>
@@ -533,26 +443,29 @@ const navigate = useNavigate();
         open={!!deletingUser}
         onOpenChange={() => setDeletingUser(null)}
       >
-        <AlertDialogContent>
+        <AlertDialogContent className="border-orange-500/10 bg-zinc-950 text-zinc-100">
           <AlertDialogHeader>
-            <AlertDialogTitle>
+            <AlertDialogTitle className="text-white">
               {deletingUser?.estado === 1
-                ? "¿Dar de baja usuario?"
-                : "¿Dar de alta usuario?"}
+                ? "Dar de baja cliente?"
+                : "Dar de alta cliente?"}
             </AlertDialogTitle>
 
-            <AlertDialogDescription>
+            <AlertDialogDescription className="text-zinc-400">
               {deletingUser?.estado === 1
-                ? "El usuario pasará a estado inactivo."
-                : "El usuario pasará a estado activo."}
+                ? "El cliente pasara a estado inactivo."
+                : "El cliente pasara a estado activo."}
             </AlertDialogDescription>
           </AlertDialogHeader>
 
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel className="border-white/10 bg-transparent text-zinc-300 hover:bg-zinc-900 hover:text-white">
+              Cancelar
+            </AlertDialogCancel>
 
             <AlertDialogAction
               disabled={toggleEstadoMutation.isPending}
+              className="bg-gradient-to-r from-orange-500 to-amber-400 font-semibold text-black hover:from-orange-400 hover:to-amber-300"
               onClick={() =>
                 toggleEstadoMutation.mutate({
                   id: deletingUser.idUsuario,

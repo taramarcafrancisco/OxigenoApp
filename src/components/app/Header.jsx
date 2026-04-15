@@ -1,7 +1,8 @@
+// @ts-nocheck
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-  
+import logo from "../assets/logo.png";
 
 import {
   DropdownMenu,
@@ -16,34 +17,22 @@ import {
   Menu,
   LogOut,
   User,
-  Settings,
   LayoutDashboard,
   CreditCard,
-  BarChart3,
-  History,
-  Search,
+  Dumbbell,
   Users,
   Shield,
   FileText,
   Bell,
-  ChevronDown,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import ThemeToggle from "@/components/app/ThemeToggle";
 
-const logo = "/images/logo.png";
-
 const userMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: createPageUrl("Dashboard") },
   { icon: CreditCard, label: "Mi Plan", to: createPageUrl("MyPlan") },
-  { icon: BarChart3, label: "Consumo", to: createPageUrl("Usage") },
-  { icon: History, label: "Historial", to: createPageUrl("History") },
-];
-
-const productMenuItems = [
-  // Define product menu items here if needed, e.g.:
-  // { tipoProducto: "tipo1", label: "Producto 1", to: "/product1" },
+  { icon: Dumbbell, label: "Rutina", to: createPageUrl("Usage") },
 ];
 
 const adminMenuItems = [
@@ -53,12 +42,11 @@ const adminMenuItems = [
     to: createPageUrl("AdminDashboard"),
   },
   { icon: Users, label: "Clientes", to: createPageUrl("Clients") },
-  { icon: FileText, label: "Gestión Planes", to: createPageUrl("ManagePlans") },
+  { icon: FileText, label: "Gestion Planes", to: createPageUrl("ManagePlans") },
 ];
 
 export default function Header({ user, isAdmin }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -72,33 +60,40 @@ export default function Header({ user, isAdmin }) {
     [user?.nombre, user?.apellido].filter(Boolean).join(" ") || "Usuario";
 
   return (
-    <header className="sticky top-0 z-40 bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-100 dark:border-slate-800">
+    <header className="sticky top-0 z-40 border-b border-orange-500/10 bg-zinc-950/95 backdrop-blur-xl">
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex h-16 items-center justify-between">
           <div className="lg:hidden">
             <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="text-slate-600">
-                  <Menu className="w-6 h-6" />
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-zinc-100 hover:bg-orange-500/10 hover:text-orange-300"
+                >
+                  <Menu className="h-6 w-6" />
                 </Button>
               </SheetTrigger>
 
-              <SheetContent side="left" className="w-72 p-0">
-                <div className="p-6 border-b border-slate-100">
+              <SheetContent
+                side="left"
+                className="w-72 border-r border-orange-500/10 bg-zinc-950 p-0"
+              >
+                <div className="border-b border-orange-500/10 bg-gradient-to-r from-zinc-950 via-zinc-900 to-zinc-950 p-6">
                   <div className="flex items-center gap-3">
                     <img
                       src={logo}
                       alt="Oxigeno Logo"
-                      className="w-10 h-10 object-contain"
+                      className="h-10 w-10 object-contain"
                     />
-                    <span className="text-xl font-semibold text-slate-800 dark:text-white">
+                    <span className="text-xl font-semibold text-white">
                       Oxigeno
                     </span>
                   </div>
                 </div>
 
-                <nav className="p-4 space-y-1">
-                  <p className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                <nav className="space-y-1 p-4">
+                  <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
                     Principal
                   </p>
 
@@ -107,48 +102,17 @@ export default function Header({ user, isAdmin }) {
                       key={item.label}
                       to={item.to}
                       onClick={() => setMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-orange-500/10 hover:text-orange-200"
                     >
-                      <item.icon className="w-5 h-5" />
+                      <item.icon className="h-5 w-5" />
                       {item.label}
                     </Link>
                   ))}
 
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      onClick={() => setMobileProductsOpen((v) => !v)}
-                      className="w-full flex items-center justify-between px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"
-                    >
-                      <span>Productos</span>
-                      <ChevronDown
-                        className={cn(
-                          "w-4 h-4 transition-transform",
-                          mobileProductsOpen && "rotate-180",
-                        )}
-                      />
-                    </button>
-
-                    {mobileProductsOpen && (
-                      <div className="mt-1 ml-5 space-y-1">
-                        {productMenuItems.map((item) => (
-                          <Link
-                            key={item.tipoProducto}
-                            to={item.to}
-                            onClick={() => setMobileMenuOpen(false)}
-                            className="block px-3 py-2 rounded-lg text-sm text-slate-600 hover:bg-slate-50"
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
                   {isAdmin && (
-                    <div className="pt-4 mt-4 border-t border-slate-100">
-                      <p className="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
-                        Administración
+                    <div className="mt-4 border-t border-orange-500/10 pt-4">
+                      <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+                        Administracion
                       </p>
 
                       {adminMenuItems.map((item) => (
@@ -156,9 +120,9 @@ export default function Header({ user, isAdmin }) {
                           key={item.label}
                           to={item.to}
                           onClick={() => setMobileMenuOpen(false)}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50"
+                          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-300 transition-colors hover:bg-orange-500/10 hover:text-orange-200"
                         >
-                          <item.icon className="w-5 h-5" />
+                          <item.icon className="h-5 w-5" />
                           {item.label}
                         </Link>
                       ))}
@@ -169,15 +133,13 @@ export default function Header({ user, isAdmin }) {
             </Sheet>
           </div>
 
-          <div className="lg:hidden flex items-center gap-2">
+          <div className="flex items-center gap-2 lg:hidden">
             <img
-              src="/images/logo.png"
+              src={logo}
               alt="Oxigeno Logo"
-              className="w-8 h-8 object-contain"
+              className="h-8 w-8 object-contain"
             />
-            <span className="text-lg font-semibold text-slate-800 dark:text-white">
-              Oxigeno
-            </span>
+            <span className="text-lg font-semibold text-white">Oxigeno</span>
           </div>
 
           <div className="hidden lg:block" />
@@ -188,33 +150,33 @@ export default function Header({ user, isAdmin }) {
             <Button
               variant="ghost"
               size="icon"
-              className="text-slate-400 hover:text-slate-600 relative"
+              className="relative rounded-full border border-orange-500/10 bg-zinc-900 text-zinc-400 hover:bg-orange-500/10 hover:text-orange-200"
             >
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-blue-500 rounded-full" />
+              <Bell className="h-5 w-5" />
+              <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-orange-500" />
             </Button>
 
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
-                  className="flex items-center gap-3 pl-2 pr-3 h-10"
+                  className="h-10 rounded-full border border-orange-500/10 bg-zinc-900/80 pl-2 pr-3 text-zinc-100 hover:bg-zinc-900"
                 >
-                  <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-sky-400 rounded-full flex items-center justify-center text-white font-medium text-sm">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 via-amber-400 to-red-500 text-sm font-medium text-black shadow-[0_0_20px_rgba(249,115,22,0.28)]">
                     {user?.nombre?.[0]?.toUpperCase() || "U"}
                   </div>
 
-                  <div className="hidden sm:block text-left">
-                    <p className="text-sm font-medium text-slate-700 leading-tight">
+                  <div className="hidden text-left sm:block">
+                    <p className="text-sm font-medium leading-tight text-white">
                       {fullName}
                     </p>
                     <Badge
                       variant="secondary"
                       className={cn(
-                        "text-xs px-1.5 py-0 h-4",
+                        "h-5 rounded-full px-2 py-0 text-[11px]",
                         isAdmin
-                          ? "bg-purple-100 text-purple-600"
-                          : "bg-blue-100 text-blue-600",
+                          ? "border border-orange-500/20 bg-orange-500/15 text-orange-300"
+                          : "border border-white/10 bg-zinc-800 text-zinc-300"
                       )}
                     >
                       {isAdmin ? "Admin" : "Usuario"}
@@ -223,38 +185,39 @@ export default function Header({ user, isAdmin }) {
                 </Button>
               </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="end" className="w-56">
+              <DropdownMenuContent
+                align="end"
+                className="w-56 border-orange-500/10 bg-zinc-950 text-zinc-100"
+              >
                 <div className="px-2 py-2">
-                  <p className="text-sm font-medium text-slate-900">
-                    {fullName}
-                  </p>
-                  <p className="text-xs text-slate-500">{user?.email}</p>
+                  <p className="text-sm font-medium text-white">{fullName}</p>
+                  <p className="text-xs text-zinc-400">{user?.email}</p>
                 </div>
 
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="bg-white/10" />
 
                 <DropdownMenuItem asChild>
                   <Link
                     to={createPageUrl("Dashboard")}
-                    className="flex items-center gap-2 cursor-pointer"
+                    className="flex cursor-pointer items-center gap-2"
                   >
-                    <User className="w-4 h-4" />
+                    <User className="h-4 w-4" />
                     Mi perfil
                   </Link>
                 </DropdownMenuItem>
 
                 <DropdownMenuItem asChild>
-                  <Link to="/settings">Configuración</Link>
+                  <Link to="/settings">Configuracion</Link>
                 </DropdownMenuItem>
 
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator className="bg-white/10" />
 
                 <DropdownMenuItem
                   onClick={handleLogout}
-                  className="text-red-600 cursor-pointer"
+                  className="cursor-pointer text-red-400 focus:text-red-300"
                 >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Cerrar sesión
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Cerrar sesion
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

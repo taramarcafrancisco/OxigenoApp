@@ -1,253 +1,224 @@
-import React, { useMemo, useState, forwardRef } from "react";
+import React from "react";
 import { useQuery } from "@tanstack/react-query";
+import {
+  ClipboardList,
+  Dumbbell,
+  Flame,
+  ShieldCheck,
+  Target,
+} from "lucide-react";
+
 import AppLayout from "../components/app/AppLayout";
+import { RutinasApi } from "../api/RutinasApi";
 import { Card } from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Badge } from "../components/ui/badge";
-import { Tabs, TabsList, TabsTrigger } from "../components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../components/ui/table";
-
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  LineChart,
-  Line,
-} from "recharts";
-
-import {
-  format,
-  subDays,
-  startOfDay,
-  endOfDay,
-  isWithinInterval,
-} from "date-fns";
-
-import { es } from "date-fns/locale";
-import { TrendingUp, Download } from "lucide-react";
-import { cn } from "../lib/utils";
-import { useAuth } from "../lib/AuthContext";
-import { API_BASE_URL, API_ENDPOINTS } from "@/constants";
-
-/* ==============================
-   FETCH BACKEND REAL
-============================== */
-async function fetchQueries({ token }) {
-  const url = `${API_BASE_URL}${API_ENDPOINTS.CONSULTAS_MIAS}?limit=500`;
-
-  const res = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-  });
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(text || `Error HTTP ${res.status}`);
-  }
-
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(text || `Error HTTP ${res.status}`);
-  }
-
-  const data = await res.json();
-
-  return data.map((c) => ({
-    id: c.idConsulta,
-    created_date: c.fecha,
-    input_address: c.consulta,
-    status: c.validada ? "success" : "error",
-    response_time_ms: null,
-    result: c.respuestaCompleta
-      ? JSON.parse(c.respuestaCompleta)
-      : null,
-  }));
-}
-
-/* ==============================
-   COMPONENT
-============================== */
 
 function UsageContent() {
-  const { token } = useAuth();
-
-  const [dateRange, setDateRange] = useState("7d");
-  const [startDate, setStartDate] = useState(subDays(new Date(), 7));
-  const [endDate, setEndDate] = useState(new Date());
-
   const {
-    data: queries = [],
+    data: routine,
     isLoading,
     isError,
     error,
   } = useQuery({
-    queryKey: ["queries-usage", token],
-    enabled: !!token,
-    queryFn: () => fetchQueries({ token }),
-    staleTime: 30000,
+    queryKey: ["my-routine"],
+    queryFn: RutinasApi.getMyRoutine,
   });
 
-  /* ==============================
-     PRESET FECHAS
-  ============================== */
-  const handlePresetChange = (preset) => {
-    setDateRange(preset);
-    const now = new Date();
-
-    switch (preset) {
-      case "7d":
-        setStartDate(subDays(now, 7));
-        break;
-      case "30d":
-        setStartDate(subDays(now, 30));
-        break;
-      case "90d":
-        setStartDate(subDays(now, 90));
-        break;
-      default:
-        setStartDate(subDays(now, 7));
-    }
-
-    setEndDate(now);
-  };
-
-  /* ==============================
-     FILTRADO POR FECHA
-  ============================== */
-  const filteredQueries = useMemo(() => {
-    return queries.filter((q) => {
-      const queryDate = new Date(q.created_date);
-      return isWithinInterval(queryDate, {
-        start: startOfDay(startDate),
-        end: endOfDay(endDate),
-      });
-    });
-  }, [queries, startDate, endDate]);
-
-  const totalQueries = filteredQueries.length;
-
-  const successRate =
-    totalQueries > 0
-      ? Math.round(
-          (filteredQueries.filter((q) => q.status === "success").length /
-            totalQueries) *
-            100
-        )
-      : 0;
-
-  /* ==============================
-     CHART DATA
-  ============================== */
-  const chartData = useMemo(() => {
-    const data = [];
-    let current = new Date(startDate);
-
-    while (current <= endDate) {
-      const dayStart = startOfDay(current);
-      const dayEnd = endOfDay(current);
-
-      const dayQueries = filteredQueries.filter((q) => {
-        const qDate = new Date(q.created_date);
-        return isWithinInterval(qDate, { start: dayStart, end: dayEnd });
-      });
-
-      data.push({
-        date: format(current, "d MMM", { locale: es }),
-        consultas: dayQueries.length,
-        exitosas: dayQueries.filter((q) => q.status === "success").length,
-        errores: dayQueries.filter((q) => q.status === "error").length,
-      });
-
-      current = new Date(current.setDate(current.getDate() + 1));
-    }
-
-    return data;
-  }, [filteredQueries, startDate, endDate]);
+  const exercises = routine?.ejercicios ?? [];
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Consumo</h1>
+      <section className="relative overflow-hidden rounded-[2rem] border border-orange-500/10 bg-gradient-to-br from-zinc-950 via-zinc-900 to-black p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] md:p-8">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.16),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(234,179,8,0.10),transparent_30%)]" />
+        <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-orange-300">
+              <Dumbbell className="h-4 w-4" />
+              Mi rutina
+            </div>
+            <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
+              Rutina de entrenamiento
+            </h1>
+            <p className="mt-2 max-w-2xl text-zinc-400">
+              Visualiza tu plan de trabajo actual, el enfoque de entrenamiento y
+              el detalle de cada ejercicio en una sola pantalla.
+            </p>
+          </div>
 
-        <Tabs value={dateRange} onValueChange={handlePresetChange}>
-          <TabsList>
-            <TabsTrigger value="7d">7 días</TabsTrigger>
-            <TabsTrigger value="30d">30 días</TabsTrigger>
-            <TabsTrigger value="90d">90 días</TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
+          <div className="grid min-w-[280px] grid-cols-2 gap-3">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="mb-2 flex items-center gap-2 text-sm text-zinc-400">
+                <Flame className="h-4 w-4 text-orange-400" />
+                Ejercicios
+              </div>
+              <p className="text-2xl font-bold text-white">{exercises.length}</p>
+            </div>
 
-      {isLoading && <Card className="p-6">Cargando...</Card>}
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="mb-2 flex items-center gap-2 text-sm text-zinc-400">
+                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                Nivel
+              </div>
+              <p className="text-2xl font-bold text-white">
+                {routine?.nivel || "-"}
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      {isError && (
-        <Card className="p-6 border border-red-200">
-          Error: {String(error?.message)}
+      {isLoading && (
+        <Card className="border-orange-500/10 bg-zinc-950/90 p-6 text-zinc-400">
+          Cargando rutina...
         </Card>
       )}
 
-      {!isLoading && !isError && (
+      {isError && (
+        <Card className="border-red-500/20 bg-red-500/10 p-6 text-red-200">
+          No se pudo cargar la rutina: {String(error?.message || "Error")}
+        </Card>
+      )}
+
+      {!isLoading && !isError && !routine && (
+        <Card className="border-orange-500/10 bg-zinc-950/90 p-6">
+          <p className="text-lg font-semibold text-white">Sin rutina asignada</p>
+          <p className="mt-2 text-sm text-zinc-400">
+            Todavia no hay una rutina cargada para este usuario.
+          </p>
+        </Card>
+      )}
+
+      {!isLoading && !isError && routine && (
         <>
-          {/* STATS */}
-          <div className="grid sm:grid-cols-2 gap-4">
-            <Card className="p-5">
-              <p className="text-sm text-slate-500">Total consultas</p>
-              <p className="text-3xl font-bold">{totalQueries}</p>
+          <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+            <Card className="border-orange-500/10 bg-zinc-950/90 p-6 xl:col-span-2">
+              <div className="mb-4 flex items-center gap-2">
+                <Target className="h-5 w-5 text-orange-400" />
+                <h2 className="text-xl font-semibold text-white">
+                  Resumen de la rutina
+                </h2>
+              </div>
+
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-5">
+                  <h3 className="text-2xl font-bold text-white">
+                    {routine.nombre || "Rutina personalizada"}
+                  </h3>
+                  <p className="mt-2 text-sm text-zinc-400">
+                    {routine.objetivo ||
+                      "Rutina activa asignada para tu entrenamiento actual."}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                  <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
+                    <p className="text-sm text-zinc-400">Nivel</p>
+                    <p className="mt-1 text-lg font-semibold text-orange-300">
+                      {routine.nivel || "-"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
+                    <p className="text-sm text-zinc-400">Dias</p>
+                    <p className="mt-1 text-lg font-semibold text-white">
+                      {routine.dias || "-"}
+                    </p>
+                  </div>
+
+                  <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
+                    <p className="text-sm text-zinc-400">Ejercicios</p>
+                    <p className="mt-1 text-lg font-semibold text-white">
+                      {exercises.length}
+                    </p>
+                  </div>
+                </div>
+
+                {routine.observaciones && (
+                  <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                    <p className="mb-2 text-sm font-semibold text-white">
+                      Observaciones
+                    </p>
+                    <p className="text-sm text-zinc-300">
+                      {routine.observaciones}
+                    </p>
+                  </div>
+                )}
+              </div>
             </Card>
 
-            <Card className="p-5">
-              <p className="text-sm text-slate-500">Tasa de éxito</p>
-              <p className="text-3xl font-bold text-green-600">
-                {successRate}%
-              </p>
+            <Card className="border-orange-500/10 bg-zinc-950/90 p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <ClipboardList className="h-5 w-5 text-orange-400" />
+                <h2 className="text-xl font-semibold text-white">
+                  Vista rapida
+                </h2>
+              </div>
+
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
+                  <p className="text-sm text-zinc-400">Objetivo</p>
+                  <p className="mt-1 text-sm font-medium text-white">
+                    {routine.objetivo || "Sin objetivo cargado"}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
+                  <p className="text-sm text-zinc-400">Frecuencia</p>
+                  <p className="mt-1 text-sm font-medium text-white">
+                    {routine.dias || "-"}
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
+                  <p className="text-sm text-zinc-400">Carga actual</p>
+                  <p className="mt-1 text-sm font-medium text-white">
+                    {exercises.length} ejercicios planificados
+                  </p>
+                </div>
+              </div>
             </Card>
           </div>
 
-          {/* BAR CHART */}
-          <Card className="p-6">
-            <h3 className="font-semibold mb-4">Consultas por día</h3>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Bar dataKey="consultas" fill="#3b82f6" />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </Card>
-     
-          {/* LINE CHART 
-          <Card className="p-6">
-            <h3 className="font-semibold mb-4">Exitosas vs Errores</h3>
-            <div className="h-64">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={chartData}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line type="monotone" dataKey="exitosas" stroke="#22c55e" />
-                  <Line type="monotone" dataKey="errores" stroke="#ef4444" />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </Card> */}
+          {exercises.length > 0 && (
+            <Card className="border-orange-500/10 bg-zinc-950/90 p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <ClipboardList className="h-5 w-5 text-orange-400" />
+                <h2 className="text-xl font-semibold text-white">
+                  Detalle de ejercicios
+                </h2>
+              </div>
+
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {exercises.map((exercise, index) => (
+                  <div
+                    key={exercise.idRutinaEjercicio || index}
+                    className="rounded-2xl border border-white/10 bg-black/30 p-4"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-lg font-semibold text-white">
+                          {typeof exercise === "string"
+                            ? exercise
+                            : exercise.ejercicio}
+                        </p>
+
+                        {typeof exercise !== "string" && (
+                          <div className="mt-3 space-y-1 text-sm text-zinc-400">
+                            <p>Series: {exercise.series ?? "-"}</p>
+                            <p>Repeticiones: {exercise.repeticiones ?? "-"}</p>
+                            <p>Descanso: {exercise.descanso ?? "-"}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      <span className="rounded-full border border-orange-500/20 bg-orange-500/10 px-2 py-1 text-xs text-orange-300">
+                        #{exercise.orden ?? index + 1}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          )}
         </>
       )}
     </div>

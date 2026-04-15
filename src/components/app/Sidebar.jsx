@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { cn } from "@/lib/utils";
+import logo from "../assets/logo.png";
 import {
   LayoutDashboard,
   CreditCard,
@@ -104,7 +105,7 @@ export default function Sidebar({ user, isAdmin }) {
       <div className="p-6 border-b border-white/10">
         <Link to={createPageUrl('Dashboard')} className="flex items-center gap-3">
           <img
-            src="/logo.png"
+            src= {logo}
             alt="oxigeno Logo"
             className="w-10 h-10 object-contain"
           />
