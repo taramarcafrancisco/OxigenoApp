@@ -47,6 +47,7 @@ export function AuthProvider({ children }) {
         Authorization: `Bearer ${jwt}`,
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
     const { text, json } = await readRes(res);
@@ -77,6 +78,7 @@ export function AuthProvider({ children }) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
+      credentials: "include",
     });
 
     const { text, json } = await readRes(res);

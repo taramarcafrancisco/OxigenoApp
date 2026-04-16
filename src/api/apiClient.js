@@ -29,6 +29,7 @@ export async function apiFetch(endpoint, options = {}) {
   const res = await fetch(`${API_BASE_URL}${endpoint}`, {
     method,
     headers,
+    credentials: "include",
     ...(finalBody !== undefined && { body: finalBody }),
   });
 
