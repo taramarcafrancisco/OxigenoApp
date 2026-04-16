@@ -130,7 +130,7 @@ export default function Landing() {
     <div className="min-h-screen bg-black text-white">
       {/* Hero Section */}
       <section
-        className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center p-4 relative overflow-hidden"
+        className="min-h-screen bg-cover bg-center bg-no-repeat flex items-center justify-center px-4 py-6 lg:py-4 relative overflow-hidden"
         style={{
           backgroundImage:
             "linear-gradient(rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.72)), url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=2000&auto=format&fit=crop')",
@@ -149,27 +149,27 @@ export default function Landing() {
           </Button>
         </div>
 
-        <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-12 items-center relative z-10">
+        <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-10 lg:gap-12 items-center relative z-10">
           {/* Left side */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8 }}
-            className="space-y-7"
+            className="space-y-6"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime-500/10 border border-lime-400/20 text-lime-300 text-sm font-medium">
-              <Dumbbell className="w-4 h-4" />
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-lime-500/10 border border-lime-400/20 text-lime-300 text-xs md:text-sm font-medium">
+              <Dumbbell className="w-3.5 h-3.5 md:w-4 md:h-4" />
               Software de gestión para gimnasios
             </div>
 
-            <h1 className="text-5xl md:text-6xl font-extrabold leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-[3.35rem] font-extrabold leading-tight">
               Potenciá tu
               <span className="block bg-gradient-to-r from-lime-400 via-emerald-400 to-orange-400 bg-clip-text text-transparent">
                 gimnasio con una gestión más inteligente
               </span>
             </h1>
 
-            <p className="text-xl text-zinc-300 leading-relaxed max-w-2xl">
+            <p className="text-lg md:text-xl text-zinc-300 leading-relaxed max-w-2xl">
               Controlá socios, cuotas, accesos, clases y seguimiento deportivo
               desde una plataforma moderna, rápida y pensada para negocios fitness.
             </p>
@@ -177,7 +177,7 @@ export default function Landing() {
             <div className="flex flex-wrap gap-4">
               <Button
                 onClick={scrollToFeatures}
-                className="bg-lime-500 hover:bg-lime-400 text-black px-8 py-6 text-lg font-semibold shadow-lg rounded-2xl"
+                className="bg-lime-500 hover:bg-lime-400 text-black px-7 py-5 text-base md:text-lg font-semibold shadow-lg rounded-2xl"
               >
                 Ver funcionalidades
               </Button>
@@ -185,7 +185,7 @@ export default function Landing() {
               <Button
                 onClick={scrollToContact}
                 variant="outline"
-                className="px-8 py-6 text-lg border-white/20 bg-white/5 hover:bg-white/10 rounded-2xl text-white"
+                className="px-7 py-5 text-base md:text-lg border-white/20 bg-white/5 hover:bg-white/10 rounded-2xl text-white"
               >
                 Pedir asesoramiento
               </Button>
@@ -196,20 +196,20 @@ export default function Landing() {
           <motion.div
             animate={shake ? { x: [-10, 10, -8, 8, -4, 4, 0] } : { x: 0 }}
             transition={{ duration: 0.45 }}
-            className="flex justify-center lg:justify-end"
+            className="flex justify-center lg:justify-end lg:-mt-20"
           >
-            <Card className="w-full max-w-md bg-zinc-950/85 backdrop-blur-xl p-10 space-y-8 shadow-2xl border border-white/10 rounded-3xl">
-              <div className="text-center space-y-3">
+            <Card className="w-full max-w-sm bg-zinc-950/85 backdrop-blur-xl p-8 space-y-6 shadow-2xl border border-white/10 rounded-3xl">
+              <div className="text-center space-y-2.5">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ duration: 0.5, delay: 0.4 }}
-                  className="mx-auto mb-4 w-20 h-20 rounded-2xl bg-gradient-to-br from-lime-400 to-orange-500 flex items-center justify-center shadow-lg"
+                  className="mx-auto mb-3 w-16 h-16 rounded-2xl bg-gradient-to-br from-lime-400 to-orange-500 flex items-center justify-center shadow-lg"
                 >
-                  <Dumbbell className="w-10 h-10 text-black" />
+                  <Dumbbell className="w-8 h-8 text-black" />
                 </motion.div>
 
-                <h2 className="text-3xl font-bold text-white">
+                <h2 className="text-2xl font-bold text-white">
                   Iniciar Sesión
                 </h2>
 
@@ -218,7 +218,7 @@ export default function Landing() {
                 </p>
               </div>
 
-              <form className="space-y-5" onSubmit={handleLogin}>
+              <form className="space-y-4" onSubmit={handleLogin}>
                 <div className="space-y-2">
                   <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
                     Usuario
@@ -228,7 +228,7 @@ export default function Landing() {
                     placeholder="usuario@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-12 bg-zinc-900 border-zinc-800 text-white rounded-xl transition-all focus:ring-2 focus:ring-lime-500/30 focus:border-lime-500"
+                    className="h-11 text-sm bg-zinc-900 border-zinc-800 text-white rounded-xl transition-all focus:ring-2 focus:ring-lime-500/30 focus:border-lime-500"
                   />
                 </div>
 
@@ -241,7 +241,7 @@ export default function Landing() {
                     placeholder="••••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="h-12 bg-zinc-900 border-zinc-800 text-white rounded-xl transition-all focus:ring-2 focus:ring-lime-500/30 focus:border-lime-500"
+                    className="h-11 text-sm bg-zinc-900 border-zinc-800 text-white rounded-xl transition-all focus:ring-2 focus:ring-lime-500/30 focus:border-lime-500"
                   />
                 </div>
 
@@ -254,7 +254,7 @@ export default function Landing() {
                 <Button
                   type="submit"
                   disabled={isLogging}
-                  className="w-full h-12 bg-gradient-to-r from-lime-400 to-orange-500 hover:from-lime-300 hover:to-orange-400 text-black font-bold transition-all rounded-xl mt-6"
+                  className="w-full h-11 text-sm bg-gradient-to-r from-lime-400 to-orange-500 hover:from-lime-300 hover:to-orange-400 text-black font-bold transition-all rounded-xl mt-4"
                 >
                   {isLogging ? "Ingresando..." : "Acceder"}
                 </Button>
