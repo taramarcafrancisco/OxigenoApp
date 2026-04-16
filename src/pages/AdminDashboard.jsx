@@ -28,7 +28,7 @@ import { es } from "date-fns/locale";
 function AdminDashboardContent() {
   const { isAdmin, token } = useAuth();
 
-  if (isAdmin) {
+  if (!isAdmin) {
     return (
       <div className="flex items-center justify-center h-64">
         <div className="text-center">

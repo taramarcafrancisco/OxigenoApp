@@ -28,7 +28,12 @@ import { toast } from "sonner";
 import { Plus, Edit, Zap, Users, Loader2, Package } from "lucide-react";
 import { cn } from "../lib/utils";
 
- 
+const PRODUCT_OPTIONS = [
+  { value: "BUSCADOR_CAMPO_UNICO", label: "Buscador campo único" },
+  { value: "MASIVA_LOTES", label: "Masiva por lotes" },
+  { value: "ESTRUCTURADA", label: "Estructurada" },
+  { value: "DESARROLLADORES", label: "Desarrolladores" },
+];
 
 function ManagePlansContent() {
   const [editingPlan, setEditingPlan] = useState(null);

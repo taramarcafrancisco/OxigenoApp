@@ -34,44 +34,57 @@ function ProductDetailContent() {
     queryFn: PlansApi.list,
   });
 
-const assignedPlans = useMemo(() => {
-  if (!user?.planes || user.planes.length === 0) return [];
+  const isPlanExpired = (fechaFin) => {
+    if (!fechaFin) return false;
 
-  return user.planes.map((userPlan) => {
-    const planId =
-      userPlan?.idPlan ??
-      userPlan?.plan?.idPlan ??
-      userPlan?.plan?.idPLan ??
-      userPlan?.plan?.idplan ??
-      userPlan?.id;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    const fullPlan = plans.find(
-      (p) => String(p.idPlan ?? p.idPLan ?? p.idplan) === String(planId)
-    );
+    const endDate = new Date(fechaFin);
+    if (Number.isNaN(endDate.getTime())) return false;
+    endDate.setHours(0, 0, 0, 0);
 
-    const expired = isPlanExpired(userPlan?.fechaFin);
+    return endDate < today;
+  };
 
-    return {
-      id: userPlan?.id ?? planId,
-      idPlan: planId,
-      nombre:
-        userPlan?.nombre ||
-        userPlan?.plan?.nombre ||
-        fullPlan?.nombre ||
-        "Plan sin nombre",
-      precio: fullPlan?.precio ?? userPlan?.precio ?? 0,
-      consultas: fullPlan?.consultas ?? userPlan?.consultas ?? 0,
-      descripcion:
-        fullPlan?.descripcion ??
-        userPlan?.descripcion ??
-        userPlan?.tipoProducto ??
-        "Sin descripción",
-      activo: (userPlan?.activo ?? true) && !expired,
-      fechaInicio: userPlan?.fechaInicio ?? null,
-      fechaFin: userPlan?.fechaFin ?? null,
-    };
-  });
-}, [user, plans]);
+  const assignedPlans = useMemo(() => {
+    if (!user?.planes || user.planes.length === 0) return [];
+
+    return user.planes.map((userPlan) => {
+      const planId =
+        userPlan?.idPlan ??
+        userPlan?.plan?.idPlan ??
+        userPlan?.plan?.idPLan ??
+        userPlan?.plan?.idplan ??
+        userPlan?.id;
+
+      const fullPlan = plans.find(
+        (p) => String(p.idPlan ?? p.idPLan ?? p.idplan) === String(planId)
+      );
+
+      const expired = isPlanExpired(userPlan?.fechaFin);
+
+      return {
+        id: userPlan?.id ?? planId,
+        idPlan: planId,
+        nombre:
+          userPlan?.nombre ||
+          userPlan?.plan?.nombre ||
+          fullPlan?.nombre ||
+          "Plan sin nombre",
+        precio: fullPlan?.precio ?? userPlan?.precio ?? 0,
+        consultas: fullPlan?.consultas ?? userPlan?.consultas ?? 0,
+        descripcion:
+          fullPlan?.descripcion ??
+          userPlan?.descripcion ??
+          userPlan?.tipoProducto ??
+          "Sin descripción",
+        activo: (userPlan?.activo ?? true) && !expired,
+        fechaInicio: userPlan?.fechaInicio ?? null,
+        fechaFin: userPlan?.fechaFin ?? null,
+      };
+    });
+  }, [user, plans]);
 
   const product = useMemo(() => {
     return assignedPlans.find((p) => String(p.id) === String(productId));
