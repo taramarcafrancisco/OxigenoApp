@@ -17,6 +17,7 @@ import {
   CalendarClock,
   BadgeCheck
 } from 'lucide-react';
+import { createPageUrl } from "../utils";
 import { useAuth } from "../lib/AuthContext";
 import { useNavigate } from "react-router-dom";
 
@@ -66,7 +67,7 @@ export default function Landing() {
         return;
       }
 
-      navigate("/dashboard");
+      navigate(createPageUrl("Dashboard"));
     } catch (err) {
       console.error("Login error:", err);
       setLoginError(err?.message || "Usuario o contraseña incorrectos");

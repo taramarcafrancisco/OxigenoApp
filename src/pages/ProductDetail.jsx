@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import AppLayout from "../components/app/AppLayout";
+import { createPageUrl } from "../utils";
 
 import { UsersApi } from "../api/users";
 import { PlansApi } from "../api/PlansApi";
@@ -113,7 +114,7 @@ const assignedPlans = useMemo(() => {
       <div className="max-w-4xl mx-auto">
         <Card className="p-6">
           <p className="text-slate-500">Producto no encontrado</p>
-          <Link to="/ui/my-plan">
+          <Link to={createPageUrl("MyPlan")}>
             <Button variant="outline" className="mt-4">
               Volver
             </Button>
@@ -186,7 +187,7 @@ const assignedPlans = useMemo(() => {
       </Card>
 
       <div>
-        <Link to="/MyPlan">
+        <Link to={createPageUrl("MyPlan")}>
           <Button variant="outline">Volver a mis productos</Button>
         </Link>
       </div>
