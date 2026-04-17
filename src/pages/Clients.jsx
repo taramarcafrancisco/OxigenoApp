@@ -162,6 +162,7 @@ function ClientsContent() {
                   apellido: fd.get("apellido"),
                   tel: fd.get("tel"),
                   email: fd.get("email"),
+                  password: fd.get("password"),
                   estado: 1,
                   roles: [{ idRol: 2 }],
                 },
@@ -190,6 +191,13 @@ function ClientsContent() {
               name="email"
               type="email"
               placeholder="Mail"
+              required
+              className="h-11 rounded-xl border-white/10 bg-zinc-900 text-white placeholder:text-zinc-500 focus-visible:ring-orange-400"
+            />
+            <Input
+              name="password"
+              type="password"
+              placeholder="Contraseña"
               required
               className="h-11 rounded-xl border-white/10 bg-zinc-900 text-white placeholder:text-zinc-500 focus-visible:ring-orange-400"
             />
