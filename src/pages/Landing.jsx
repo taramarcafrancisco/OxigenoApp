@@ -151,7 +151,7 @@ export default function Landing() {
               Software de gestión para gimnasios
             </div>
 
-            <h1 className="max-w-3xl text-3xl md:text-[3.25rem] lg:text-[4.1rem] font-extrabold leading-[0.95] tracking-tight">
+            <h1 className="max-w-3xl text-3xl md:text-[2.85rem] lg:text-[3.35rem] font-extrabold leading-[0.98] tracking-tight">
               Potenciá tu
               <span className="block bg-gradient-to-r from-lime-400 via-emerald-400 to-orange-400 bg-clip-text text-transparent">
                 gimnasio con una gestión más inteligente
