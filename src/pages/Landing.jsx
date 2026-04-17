@@ -138,7 +138,7 @@ export default function Landing() {
       >
         <AnimatedBackground />
 
-        <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-10 lg:gap-12 items-start relative z-10">
+        <div className="w-full max-w-7xl grid lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,420px)] gap-8 lg:gap-6 items-start relative z-10">
           {/* Left side */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
