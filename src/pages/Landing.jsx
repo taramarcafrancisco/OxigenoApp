@@ -138,7 +138,7 @@ export default function Landing() {
       >
         <AnimatedBackground />
 
-        <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-10 lg:gap-12 items-center relative z-10">
+        <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-10 lg:gap-12 items-start relative z-10">
           {/* Left side */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
@@ -203,7 +203,7 @@ export default function Landing() {
           <motion.div
             animate={shake ? { x: [-10, 10, -8, 8, -4, 4, 0] } : { x: 0 }}
             transition={{ duration: 0.45 }}
-            className="flex justify-center lg:justify-end lg:-mt-20"
+            className="flex justify-center lg:justify-end lg:pt-8"
           >
             <Card className="w-full max-w-sm bg-zinc-950/85 backdrop-blur-xl p-8 space-y-6 shadow-2xl border border-white/10 rounded-3xl">
               <div className="text-center space-y-2.5">
