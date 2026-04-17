@@ -138,17 +138,6 @@ export default function Landing() {
       >
         <AnimatedBackground />
 
-        {/* Top nav button */}
-        <div className="absolute top-8 right-8 z-20">
-          <Button
-            variant="ghost"
-            onClick={scrollToContact}
-            className="text-white hover:text-lime-400 hover:bg-white/10 font-medium transition-all border border-white/10 rounded-xl"
-          >
-            Solicitar demo
-          </Button>
-        </div>
-
         <div className="w-full max-w-7xl grid lg:grid-cols-2 gap-10 lg:gap-12 items-center relative z-10">
           {/* Left side */}
           <motion.div
@@ -162,14 +151,14 @@ export default function Landing() {
               Software de gestión para gimnasios
             </div>
 
-            <h1 className="text-4xl md:text-5xl lg:text-[3.35rem] font-extrabold leading-tight">
+            <h1 className="max-w-3xl text-3xl md:text-[3.25rem] lg:text-[4.1rem] font-extrabold leading-[0.95] tracking-tight">
               Potenciá tu
               <span className="block bg-gradient-to-r from-lime-400 via-emerald-400 to-orange-400 bg-clip-text text-transparent">
                 gimnasio con una gestión más inteligente
               </span>
             </h1>
 
-            <p className="text-lg md:text-xl text-zinc-300 leading-relaxed max-w-2xl">
+            <p className="max-w-xl text-base md:text-lg text-zinc-300 leading-relaxed">
               Controlá socios, cuotas, accesos, clases y seguimiento deportivo
               desde una plataforma moderna, rápida y pensada para negocios fitness.
             </p>
@@ -190,6 +179,24 @@ export default function Landing() {
                 Pedir asesoramiento
               </Button>
             </div>
+
+            <button
+              type="button"
+              onClick={scrollToContact}
+              className="group inline-flex max-w-md items-center gap-3 rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-left backdrop-blur-sm transition-all hover:border-lime-400/30 hover:bg-white/5"
+            >
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-lime-400 to-orange-500 text-sm font-extrabold text-black">
+                15'
+              </span>
+              <span>
+                <span className="block text-sm font-semibold text-white">
+                  Solicitar demo personalizada
+                </span>
+                <span className="block text-sm text-zinc-400 group-hover:text-zinc-300">
+                  Coordinamos una muestra breve del sistema con tu flujo real.
+                </span>
+              </span>
+            </button>
           </motion.div>
 
           {/* Right side - Login */}
