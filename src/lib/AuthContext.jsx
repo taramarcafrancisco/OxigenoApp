@@ -35,6 +35,7 @@ export function AuthProvider({ children }) {
   // =========================
   const fetchMe = async (jwtParam) => {
     const jwt = jwtParam || localStorage.getItem("token");
+    console.log("[auth] fetchMe token:", jwt);
     if (!jwt) return null;
 
     // ✅ asegurate de tener ME en constants:
@@ -47,10 +48,12 @@ export function AuthProvider({ children }) {
         Authorization: `Bearer ${jwt}`,
         "Content-Type": "application/json",
       },
-      credentials: "include",
     });
+    console.log("[auth] /auth/me status:", res.status, res.statusText);
 
     const { text, json } = await readRes(res);
+    console.log("[auth] /auth/me raw response:", text);
+    console.log("[auth] /auth/me parsed response:", json);
 
     if (!res.ok) {
       const msg = text || `${res.status} ${res.statusText}`;
@@ -73,15 +76,19 @@ export function AuthProvider({ children }) {
   // =========================
   const login = async (email, password) => {
     const url = `${API_BASE_URL}${API_ENDPOINTS.LOGIN}`;
+    console.log("[auth] login request url:", url);
+    console.log("[auth] login payload:", { email, password });
 
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
-      credentials: "include",
     });
+    console.log("[auth] /auth/login status:", res.status, res.statusText);
 
     const { text, json } = await readRes(res);
+    console.log("[auth] /auth/login raw response:", text);
+    console.log("[auth] /auth/login parsed response:", json);
 
     if (!res.ok) {
       const msg = text || `${res.status} ${res.statusText}`;
@@ -101,17 +108,21 @@ export function AuthProvider({ children }) {
     if (!jwt) {
       throw new Error("Login OK pero no vino token");
     }
+    console.log("[auth] token extracted:", jwt);
 
     // guardo token
     localStorage.setItem("token", jwt);
     setToken(jwt);
+    console.log("[auth] token saved in localStorage:", localStorage.getItem("token"));
 
     // ✅ SIEMPRE pedir user full
     const fullUser = await fetchMe(jwt);
+    console.log("[auth] full user from /me:", fullUser);
 
     // fallback: si por alguna razón /me no devolvió user, guardo el mini
     if (!fullUser) {
       const uMini = data.user ?? data.usuario ?? null;
+      console.log("[auth] fallback user from login response:", uMini);
       if (uMini) {
         localStorage.setItem("user", JSON.stringify(uMini));
         setUser(uMini);
