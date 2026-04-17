@@ -20,15 +20,16 @@ Any change pushed to the repo will also be reflected in the Base44 Builder.
 ```
 VITE_BASE44_APP_ID=your_app_id
 VITE_BASE44_APP_BASE_URL=your_backend_url
-VITE_API_URL=https://oxigeno-app-service.onrender.com/api
+VITE_API_URL=http://localhost:5388/api
 
 e.g.
 VITE_BASE44_APP_ID=cbef744a8545c389ef439ea6
 VITE_BASE44_APP_BASE_URL=https://my-to-do-list-81bfaad7.base44.app
-VITE_API_URL=https://oxigeno-app-service.onrender.com/api
+VITE_API_URL=http://localhost:5388/api
 ```
 
-For Vercel deployments, set `VITE_API_URL` to your backend URL.
+For Vercel production deployments, set:
+`VITE_API_URL=https://oxigeno-app-service.onrender.com/api`
 
 Run the app: `npm run dev`
 
