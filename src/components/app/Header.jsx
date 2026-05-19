@@ -1,4 +1,4 @@
-// @ts-nocheck
+﻿// @ts-nocheck
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -19,7 +19,7 @@ import {
   User,
   LayoutDashboard,
   CreditCard,
-  Dumbbell,
+  Hammer,
   Users,
   Shield,
   FileText,
@@ -31,8 +31,8 @@ import ThemeToggle from "@/components/app/ThemeToggle";
 
 const userMenuItems = [
   { icon: LayoutDashboard, label: "Dashboard", to: createPageUrl("Dashboard") },
-  { icon: CreditCard, label: "Mi Plan", to: createPageUrl("MyPlan") },
-  { icon: Dumbbell, label: "Rutina", to: createPageUrl("Usage") },
+  { icon: CreditCard, label: "Mi Cuenta", to: createPageUrl("MyPlan") },
+  { icon: Hammer, label: "Catalogo", to: createPageUrl("Usage") },
 ];
 
 const adminMenuItems = [
@@ -42,7 +42,7 @@ const adminMenuItems = [
     to: createPageUrl("AdminDashboard"),
   },
   { icon: Users, label: "Clientes", to: createPageUrl("Clients") },
-  { icon: FileText, label: "Gestion Planes", to: createPageUrl("ManagePlans") },
+  { icon: FileText, label: "Condiciones comerciales", to: createPageUrl("ManagePlans") },
 ];
 
 export default function Header({ user, isAdmin }) {
@@ -83,12 +83,10 @@ export default function Header({ user, isAdmin }) {
                   <div className="flex items-center gap-3">
                     <img
                       src={logo}
-                      alt="Oxigeno Logo"
+                      alt="FerreManager Logo"
                       className="h-10 w-10 object-contain"
                     />
-                    <span className="text-xl font-semibold text-white">
-                      Oxigeno
-                    </span>
+                    <span className="text-xl font-semibold text-white">FerreManager</span>
                   </div>
                 </div>
 
@@ -136,10 +134,10 @@ export default function Header({ user, isAdmin }) {
           <div className="flex items-center gap-2 lg:hidden">
             <img
               src={logo}
-              alt="Oxigeno Logo"
+              alt="FerreManager Logo"
               className="h-8 w-8 object-contain"
             />
-            <span className="text-lg font-semibold text-white">Oxigeno</span>
+            <span className="text-lg font-semibold text-white">FerreManager</span>
           </div>
 
           <div className="hidden lg:block" />
@@ -179,7 +177,7 @@ export default function Header({ user, isAdmin }) {
                           : "border border-white/10 bg-zinc-800 text-zinc-300"
                       )}
                     >
-                      {isAdmin ? "Admin" : "Usuario"}
+                      {isAdmin ? "Admin" : "Cliente"}
                     </Badge>
                   </div>
                 </Button>
@@ -227,3 +225,4 @@ export default function Header({ user, isAdmin }) {
     </header>
   );
 }
+

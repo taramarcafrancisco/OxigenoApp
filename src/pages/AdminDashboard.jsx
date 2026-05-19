@@ -15,31 +15,12 @@ import {
   Crown,
 } from "lucide-react";
 
-import {
-  format,
-  subDays,
-  startOfDay,
-  endOfDay,
-  isWithinInterval,
-} from "date-fns";
-import { es } from "date-fns/locale";
+
+
 
 
 function AdminDashboardContent() {
   const { isAdmin, token } = useAuth();
-
-  if (!isAdmin) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-          <p className="text-slate-600">
-            No tienes permisos para ver esta página
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ["admin-users"],
@@ -49,17 +30,32 @@ function AdminDashboardContent() {
       });
       return res.data;
     },
+    enabled: isAdmin,
   });
 
   const { data: allQueries = [] } = useQuery({
-    queryKey: ["admin-consultas"],
+    queryKey: ["admin-movimientos"],
     queryFn: async () => {
       const res = await api.get(API_ENDPOINTS.ADMIN_CONSULTAS, {
         headers: { Authorization: `Bearer ${token}` },
       });
       return res.data;
     },
+    enabled: isAdmin,
   });
+
+  if (!isAdmin) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
+          <p className="text-slate-600">
+            No tienes permisos para ver esta pÃ¡gina
+          </p>
+        </div>
+      </div>
+    );
+  }
 
 
   const activeUsers = allUsers.filter(
@@ -118,7 +114,7 @@ function AdminDashboardContent() {
           </h1>
           <Badge className="bg-purple-100 text-purple-700">Admin</Badge>
         </div>
-        <p className="text-slate-500">Métricas globales de la plataforma</p>
+        <p className="text-slate-500">MÃ©tricas globales de la plataforma</p>
       </div>
 
 
@@ -130,13 +126,13 @@ function AdminDashboardContent() {
           colorClass="blue"
         />
         <StatsCard
-          title="Consultas hoy"
+          title="movimientos hoy"
           value={queriesToday}
           icon={Activity}
           colorClass="green"
         />
         <StatsCard
-          title="Total consultas"
+          title="Total movimientos"
           value={totalQueries}
           icon={TrendingUp}
           colorClass="purple"
@@ -166,7 +162,7 @@ function AdminDashboardContent() {
                 <p className="font-medium">{c.name}</p>
                 <p className="text-xs text-slate-500">{c.email}</p>
               </div>
-              <Badge>{c.queries} consultas</Badge>
+              <Badge>{c.queries} movimientos</Badge>
             </div>
           ))
         ) : (
@@ -184,3 +180,5 @@ export default function AdminDashboard() {
     </AppLayout>
   );
 }
+
+

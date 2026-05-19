@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+﻿import React, { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import AppLayout from "../components/app/AppLayout";
 import { Card } from "../components/ui/card";
@@ -38,7 +38,7 @@ import { useAuth } from "../lib/AuthContext";
 import { API_BASE_URL, API_ENDPOINTS } from "../constants";
 
 /**
- * Ajustá este fetch a tu backend real.
+ * AjustÃ¡ este fetch a tu backend real.
  * Espera devolver un array de items con forma:
  * {
  *   id: string|number,
@@ -67,11 +67,11 @@ async function fetchHistory({ token, limit = 1000 }) {
 
   const data = await res.json();
 
-  // 🔥 Adaptamos backend → formato que usa la tabla
+  // ðŸ”¥ Adaptamos backend â†’ formato que usa la tabla
   return data.map((c) => ({
-    id: c.idConsulta,
+    id: c.idmovimiento,
     created_date: c.fecha,
-    input_address: c.consulta,
+    input_address: c.movimiento,
     status: c.validada ? "success" : "pending",
     response_time_ms: null,
     result: c.respuestaCompleta
@@ -178,7 +178,7 @@ const handleExport = () => {
     response_time_ms: q.response_time_ms ?? "",
 
     // datos del resultado
-    direccion: q.result?.direccion ?? "",
+    producto: q.result?.producto ?? "",
     provincia: q.result?.provincia ?? "",
     partido: q.result?.partido ?? "",
     localidad: q.result?.localidad ?? "",
@@ -211,7 +211,7 @@ const handleExport = () => {
             Historial
           </h1>
           <p className="text-slate-500 mt-1">
-            Consulta tus validaciones anteriores
+            Consulta tus movimientos anteriores
           </p>
         </div>
 
@@ -241,7 +241,7 @@ const handleExport = () => {
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <Input
-              placeholder="Buscar por dirección..."
+              placeholder="Buscar por direcciÃ³n..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10"
@@ -288,7 +288,7 @@ const handleExport = () => {
 
       {/* Results count */}
       <p className="text-sm text-slate-500">
-        Mostrando {filteredQueries.length} de {queries.length} consultas
+        Mostrando {filteredQueries.length} de {queries.length} movimientos
       </p>
 
       {/* Table */}
@@ -298,7 +298,7 @@ const handleExport = () => {
             <TableHeader>
               <TableRow>
                 <TableHead>Fecha</TableHead>
-                <TableHead>Dirección consultada</TableHead>
+                <TableHead>DirecciÃ³n movimientoda</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead className="text-right">Tiempo</TableHead>
                 <TableHead className="w-10"></TableHead>
@@ -334,12 +334,12 @@ const handleExport = () => {
                         <MapPin className="w-8 h-8 text-slate-400" />
                       </div>
                       <p className="text-slate-600 font-medium">
-                        No se encontraron consultas
+                        No se encontraron movimientos
                       </p>
                       <p className="text-sm text-slate-500 mt-1">
                         {searchTerm || selectedDate
                           ? "Intenta ajustar los filtros"
-                          : "Aún no has realizado ninguna consulta"}
+                          : "AÃºn no has realizado ninguna movimiento"}
                       </p>
                     </div>
                   </TableCell>
@@ -403,7 +403,7 @@ const handleExport = () => {
       <Dialog open={!!selectedQuery} onOpenChange={() => setSelectedQuery(null)}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Detalle de consulta</DialogTitle>
+            <DialogTitle>Detalle de movimiento</DialogTitle>
           </DialogHeader>
 
           {selectedQuery && (
@@ -443,7 +443,7 @@ const handleExport = () => {
 
               {/* Input */}
               <div>
-                <p className="text-sm text-slate-500 mb-2">Dirección enviada</p>
+                <p className="text-sm text-slate-500 mb-2">DirecciÃ³n enviada</p>
                 <div className="bg-slate-50 rounded-xl p-4 border border-slate-100">
                   <p className="text-slate-900">{selectedQuery.input_address}</p>
                 </div>
@@ -475,3 +475,5 @@ export default function History() {
     </AppLayout>
   );
 }
+
+

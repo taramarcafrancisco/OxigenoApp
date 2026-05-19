@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Terminal, Copy, Check } from "lucide-react";
 import { toast } from "sonner";
-import { useAuth } from "@/lib/AuthContext";
 import { API_BASE_URL, API_ENDPOINTS } from "../constants.js";
 
 const api = axios.create({

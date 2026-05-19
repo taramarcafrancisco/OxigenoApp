@@ -115,14 +115,14 @@ function ClientsContent() {
         <div className="relative flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div>
             <p className="mb-2 text-xs font-semibold uppercase tracking-[0.28em] text-orange-300/80">
-              Gestion de socios
+              Gestion de clientes
             </p>
             <h1 className="text-3xl font-bold tracking-tight text-white">
               Clientes
             </h1>
             <p className="mt-2 max-w-2xl text-sm text-zinc-400">
-              Organiza a tus alumnos con una visual mas clara, energica y alineada
-              a la operacion diaria del gimnasio.
+              Organiza compradores frecuentes, obras y cuentas comerciales con
+              una visual clara para la operacion diaria de la ferreteria.
             </p>
           </div>
 

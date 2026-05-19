@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AppLayout from "../components/app/AppLayout";
 import { PlansApi } from "../api/PlansApi";
@@ -29,10 +29,10 @@ import { Plus, Edit, Zap, Users, Loader2, Package } from "lucide-react";
 import { cn } from "../lib/utils";
 
 const PRODUCT_OPTIONS = [
-  { value: "BUSCADOR_CAMPO_UNICO", label: "Buscador campo único" },
-  { value: "MASIVA_LOTES", label: "Masiva por lotes" },
-  { value: "ESTRUCTURADA", label: "Estructurada" },
-  { value: "DESARROLLADORES", label: "Desarrolladores" },
+  { value: "BUSCADOR_CAMPO_UNICO", label: "Buscador campo Ãºnico" },
+  { value: "MASIVA_LOTES", label: "Pedidos por lote" },
+  { value: "ESTRUCTURADA", label: "Catalogo estructurado" },
+  { value: "DESARROLLADORES", label: "Integraciones" },
 ];
 
 function ManagePlansContent() {
@@ -61,12 +61,12 @@ function ManagePlansContent() {
       setEditingPlan(null);
       setCreating(false);
       setSelectedProduct("BUSCADOR_CAMPO_UNICO");
-      toast.success("Plan guardado correctamente");
+      toast.success("Condicion guardada correctamente");
     },
 
     onError: (err) => {
       console.error(err);
-      toast.error("Error al guardar el plan");
+      toast.error("Error al guardar la condicion");
     },
   });
 
@@ -74,10 +74,10 @@ function ManagePlansContent() {
     mutationFn: (id) => PlansApi.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["plans"] });
-      toast.success("Plan eliminado correctamente");
+      toast.success("Condicion eliminada correctamente");
     },
     onError: (err) => {
-      toast.error(err.message || "No se pudo eliminar el plan");
+      toast.error(err.message || "No se pudo eliminar la condicion");
     },
   });
 
@@ -122,9 +122,9 @@ function ManagePlansContent() {
       id: editingPlan?.idPlan,
       data: {
         nombre: fd.get("nombre"),
-        descripcion: fd.get("descripcion"),
+        Descripcion: fd.get("Descripcion"),
         precio: Number(fd.get("precio")),
-        consultas: Number(fd.get("consultas")),
+        movimientos: Number(fd.get("movimientos")),
         tipoProducto: selectedProduct,
       },
     });
@@ -134,18 +134,18 @@ function ManagePlansContent() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold">Planes</h1>
-          <p className="text-slate-500">Gestión de planes del sistema</p>
+          <h1 className="text-3xl font-bold">Condiciones comerciales</h1>
+          <p className="text-slate-500">GestiÃ³n de planes del sistema</p>
         </div>
 
         <Button onClick={openCreate}>
           <Plus className="w-4 h-4 mr-2" />
-          Nuevo plan
+          Nueva condicion
         </Button>
       </div>
 
       {isLoading ? (
-        <Card className="p-6">Cargando planes...</Card>
+        <Card className="p-6">Cargando condiciones...</Card>
       ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {plans.map((plan) => (
@@ -155,7 +155,7 @@ function ManagePlansContent() {
                 <Badge variant="outline">${plan.precio}</Badge>
               </div>
 
-              <p className="text-sm text-slate-500 mb-4">{plan.descripcion}</p>
+              <p className="text-sm text-slate-500 mb-4">{plan.Descripcion}</p>
 
               <div className="flex items-center gap-2 text-violet-600 mb-2">
                 <Package className="w-4 h-4" />
@@ -166,7 +166,7 @@ function ManagePlansContent() {
 
               <div className="flex items-center gap-2 text-blue-600 mb-2">
                 <Zap className="w-4 h-4" />
-                {plan.consultas} consultas
+                {plan.movimientos} movimientos
               </div>
 
               <div className="flex items-center gap-2 text-slate-500 text-sm mb-4">
@@ -187,7 +187,7 @@ function ManagePlansContent() {
                 variant="destructive"
                 className="w-full mt-2"
                 onClick={() => {
-                  if (confirm("¿Seguro que querés eliminar este plan?")) {
+                  if (confirm("Â¿Seguro que querÃ©s eliminar este plan?")) {
                     deleteMutation.mutate(plan.idPlan);
                   }
                 }}
@@ -208,7 +208,7 @@ function ManagePlansContent() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingPlan ? "Editar plan" : "Nuevo plan"}
+              {editingPlan ? "Editar condicion" : "Nueva condicion"}
             </DialogTitle>
           </DialogHeader>
 
@@ -223,10 +223,10 @@ function ManagePlansContent() {
             </div>
 
             <div>
-              <Label>Descripción</Label>
+              <Label>DescripciÃ³n</Label>
               <Input
-                name="descripcion"
-                defaultValue={editingPlan?.descripcion || ""}
+                name="Descripcion"
+                defaultValue={editingPlan?.Descripcion || ""}
               />
             </div>
 
@@ -234,7 +234,7 @@ function ManagePlansContent() {
               <Label>Producto</Label>
               <Select value={selectedProduct} onValueChange={setSelectedProduct}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Seleccionar producto" />
+                  <SelectValue placeholder="Seleccionar rubro" />
                 </SelectTrigger>
                 <SelectContent>
                   {PRODUCT_OPTIONS.map((product) => (
@@ -257,11 +257,11 @@ function ManagePlansContent() {
             </div>
 
             <div>
-              <Label>Consultas</Label>
+              <Label>movimientos</Label>
               <Input
-                name="consultas"
+                name="movimientos"
                 type="number"
-                defaultValue={editingPlan?.consultas ?? 0}
+                defaultValue={editingPlan?.movimientos ?? 0}
                 required
               />
             </div>
@@ -292,3 +292,4 @@ export default function ManagePlans() {
     </AppLayout>
   );
 }
+

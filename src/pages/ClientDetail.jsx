@@ -25,13 +25,11 @@ import {
 } from "@/components/ui/table";
 import {
   ArrowLeft,
-  User,
   Mail,
   Building,
   Calendar as CalendarIcon,
   CreditCard,
   Activity,
-  CheckCircle,
   XCircle,
   AlertCircle,
 } from "lucide-react";
@@ -48,7 +46,7 @@ import {
 } from "recharts";
 import { cn } from "@/lib/utils";
 
-import { API_BASE_URL } from "@/constants"; // si lo tenés así
+import { API_BASE_URL } from "@/constants"; // si lo tenÃ©s asÃ­
 import axios from "axios";
 const safeDate = (value) => {
   if (!value) return null;
@@ -101,9 +99,9 @@ function ClientDetailContent({ user, isAdmin }) {
 
   const { data: assignedPlans = [], isLoading: assignedPlansLoading } =
     useQuery({
-      queryKey: ["client-assigned-plans", clientId],
+      queryKey: ["client-assigned-cuentas", clientId],
       queryFn: async () => {
-        const res = await api.get(`/usuarios-planes/usuario/${clientId}`);
+        const res = await api.get(`/usuarios-condiciones/usuario/${clientId}`);
         return res.data;
       },
       enabled: !!clientId,
@@ -112,7 +110,7 @@ function ClientDetailContent({ user, isAdmin }) {
   const { data: plans = [] } = useQuery({
     queryKey: ["plans"],
     queryFn: async () => {
-      const res = await api.get("/planes");
+      const res = await api.get("/condiciones");
       return res.data;
     },
   });
@@ -129,8 +127,8 @@ function ClientDetailContent({ user, isAdmin }) {
     return item?.fechaFin || item?.fecha_fin || item?.vencimiento || null;
   };
 
-  const getNearestPlanExpiration = (plans) => {
-    const validDates = plans
+  const getNearestPlanExpiration = (cuentas) => {
+    const validDates = cuentas
       .map((item) => getPlanEndDate(item))
       .filter(Boolean)
       .map((value) => new Date(value))
@@ -153,7 +151,7 @@ function ClientDetailContent({ user, isAdmin }) {
   }, 0);
 
   const assignedPlanNames = activeAssignedPlans.map(
-    (item) => item?.plan?.nombre || item?.plan?.name || "Plan sin nombre",
+    (item) => item?.plan?.nombre || item?.plan?.name || "cuenta comercial sin nombre",
   );
 
   // Filter queries by selected date
@@ -217,9 +215,9 @@ function ClientDetailContent({ user, isAdmin }) {
   const formatProductName = (tipo) => {
     const map = {
       DESARROLLADORES: "Desarrolladores",
-      BUSCADOR_CAMPO_UNICO: "Buscador Campo Único",
+      BUSCADOR_CAMPO_UNICO: "Buscador Campo Ãšnico",
       BUSCADOR_MASIVO_LOTES: "Buscador Masivo Lotes",
-      ESTRUCTURADA: "Búsqueda Estructurada",
+      ESTRUCTURADA: "BÃºsqueda Estructurada",
       SIN_PRODUCTO: "Sin producto",
     };
 
@@ -245,7 +243,7 @@ function ClientDetailContent({ user, isAdmin }) {
     );
     chartData.push({
       date: format(date, "EEE", { locale: es }),
-      consultas: dayQueries.length,
+      movimientos: dayQueries.length,
     });
   }
 
@@ -255,7 +253,7 @@ function ClientDetailContent({ user, isAdmin }) {
         <div className="text-center">
           <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
           <p className="text-slate-600">
-            No tienes permisos para ver esta página
+            No tienes permisos para ver esta pÃ¡gina
           </p>
         </div>
       </div>
@@ -351,10 +349,10 @@ function ClientDetailContent({ user, isAdmin }) {
               variant="outline"
               className="bg-blue-50 text-blue-700 border-blue-200"
             >
-              Planes:{" "}
+              condiciones:{" "}
               {assignedPlanNames.length > 0
                 ? assignedPlanNames.join(" - ")
-                : "Sin planes"}
+                : "Sin condiciones"}
             </Badge>
           </div>
         </div>
@@ -363,7 +361,7 @@ function ClientDetailContent({ user, isAdmin }) {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="p-4">
-          <p className="text-sm text-slate-500">Total consultas</p>
+          <p className="text-sm text-slate-500">Total movimientos</p>
           <p className="text-2xl font-bold text-slate-900">
             {clientQueries.length}
           </p>
@@ -376,29 +374,29 @@ function ClientDetailContent({ user, isAdmin }) {
         </Card>
 
         <Card className="p-4">
-          <p className="text-sm text-slate-500">Tasa de éxito</p>
+          <p className="text-sm text-slate-500">Tasa de Ã©xito</p>
           <p className="text-2xl font-bold text-blue-600">{successRate}%</p>
         </Card>
       </div>
       <Card className="p-6">
         <div className="flex items-center gap-2 mb-4">
           <CreditCard className="w-5 h-5 text-blue-500" />
-          <h3 className="font-semibold text-slate-900">Planes asignados</h3>
+          <h3 className="font-semibold text-slate-900">condiciones asignados</h3>
         </div>
 
         {assignedPlansLoading ? (
-          <p className="text-sm text-slate-500">Cargando planes...</p>
+          <p className="text-sm text-slate-500">Cargando condiciones...</p>
         ) : assignedPlans.length === 0 ? (
           <p className="text-sm text-slate-500">
-            El cliente no tiene planes asignados.
+            El cliente no tiene condiciones asignados.
           </p>
         ) : (
        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {assignedPlans.map((item) => {
-              const planNombre =
-                item?.plan?.nombre || item?.plan?.name || "Plan sin nombre";
+              const cuentaNombre =
+                item?.plan?.nombre || item?.plan?.name || "cuenta comercial sin nombre";
 
-              const planLimite =
+              const cuentaLimite =
                 item?.plan?.limiteConsultas ??
                 item?.plan?.queries_limit ??
                 item?.limiteConsultas ??
@@ -411,17 +409,17 @@ function ClientDetailContent({ user, isAdmin }) {
 
               return (
                 <Card
-                  key={item.id || `${planNombre}-${fechaInicio || "sin-fecha"}`}
+                  key={item.id || `${cuentaNombre}-${fechaInicio || "sin-fecha"}`}
                   className="p-4 border border-slate-200 shadow-none"
                 >
                   <div className="space-y-3">
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <p className="text-base font-semibold text-slate-900">
-                          {planNombre}
+                          {cuentaNombre}
                         </p>
                         <p className="text-sm text-slate-500">
-                          {planLimite} consultas
+                          {cuentaLimite} movimientos
                         </p>
                       </div>
 
@@ -448,7 +446,7 @@ function ClientDetailContent({ user, isAdmin }) {
                       </div>
 
                       <div className="flex justify-between gap-3">
-                        <span className="font-medium">Finalización</span>
+                        <span className="font-medium">FinalizaciÃ³n</span>
                         <span>
                           {fechaFin
                             ? format(new Date(fechaFin), "d/MM/yyyy")
@@ -499,7 +497,7 @@ function ClientDetailContent({ user, isAdmin }) {
                       variant="outline"
                       className="bg-blue-50 text-blue-700 border-blue-200"
                     >
-                      {item.total} consultas
+                      {item.total} movimientos
                     </Badge>
                   </div>
 
@@ -519,7 +517,7 @@ function ClientDetailContent({ user, isAdmin }) {
                     </div>
 
                     <div className="flex justify-between">
-                      <span className="text-slate-500">Tasa de éxito</span>
+                      <span className="text-slate-500">Tasa de Ã©xito</span>
                       <span className="font-medium text-slate-900">
                         {tasaExito}%
                       </span>
@@ -539,14 +537,14 @@ function ClientDetailContent({ user, isAdmin }) {
       {/* Tabs for Chart and History */}
       <Tabs defaultValue="chart">
         <TabsList className="bg-slate-100">
-          <TabsTrigger value="chart">Gráfico</TabsTrigger>
+          <TabsTrigger value="chart">GrÃ¡fico</TabsTrigger>
           <TabsTrigger value="history">Historial</TabsTrigger>
         </TabsList>
 
         <TabsContent value="chart" className="mt-4">
           <Card className="p-6">
             <h3 className="font-semibold text-slate-900 mb-4">
-              Actividad (últimos 7 días)
+              Actividad (Ãºltimos 7 dÃ­as)
             </h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
@@ -560,7 +558,7 @@ function ClientDetailContent({ user, isAdmin }) {
                   <YAxis tick={{ fontSize: 12 }} stroke="#94a3b8" />
                   <Tooltip />
                   <Bar
-                    dataKey="consultas"
+                    dataKey="movimientos"
                     fill="#3b82f6"
                     radius={[4, 4, 0, 0]}
                   />
@@ -610,7 +608,7 @@ function ClientDetailContent({ user, isAdmin }) {
               <TableHeader>
                 <TableRow>
                   <TableHead>Fecha</TableHead>
-                  <TableHead>Dirección</TableHead>
+                  <TableHead>DirecciÃ³n</TableHead>
                   <TableHead>Estado</TableHead>
                   <TableHead className="text-right">Tiempo</TableHead>
                 </TableRow>
@@ -622,7 +620,7 @@ function ClientDetailContent({ user, isAdmin }) {
                       colSpan={4}
                       className="text-center py-8 text-slate-500"
                     >
-                      No hay consultas para mostrar
+                      No hay movimientos para mostrar
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -676,3 +674,6 @@ export default function ClientDetail() {
     </AppLayout>
   );
 }
+
+
+

@@ -1,28 +1,27 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Button } from "@/components/ui/button";
 import { Search, History, TrendingUp, ArrowRight } from 'lucide-react';
 
 const actions = [
   {
     icon: Search,
-    title: 'Nueva consulta',
-    description: 'Validar una dirección',
+    title: 'Nueva movimiento',
+    description: 'Validar una direcciÃ³n',
     page: 'NewQuery',
     color: 'blue'
   },
   {
     icon: History,
     title: 'Ver historial',
-    description: 'Consultas recientes',
+    description: 'movimientos recientes',
     page: 'History',
     color: 'purple'
   },
   {
     icon: TrendingUp,
     title: 'Ver consumo',
-    description: 'Estadísticas detalladas',
+    description: 'EstadÃ­sticas detalladas',
     page: 'Usage',
     color: 'green'
   }
@@ -37,7 +36,7 @@ const colorClasses = {
 export default function QuickActions() {
   return (
     <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border-2 border-slate-200 dark:border-slate-700 shadow-md hover:shadow-lg transition-all duration-300">
-      <h3 className="text-lg font-semibold text-slate-900 mb-4">Acciones rápidas</h3>
+      <h3 className="text-lg font-semibold text-slate-900 mb-4">Acciones rÃ¡pidas</h3>
       <div className="space-y-3">
         {actions.map((action) => (
           <Link

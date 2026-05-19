@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+﻿import React, { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AppLayout from "../components/app/AppLayout";
@@ -68,7 +68,7 @@ function UserPlans() {
     userData?.email ||
     `Cliente #${id}`;
   // =========================
-  // GET PLANES DEL USUARIO
+  // GET Condiciones del cliente
   // =========================
   const {
     data: userPlans = [],
@@ -98,7 +98,7 @@ function UserPlans() {
   });
 
   // =========================
-  // CREAR / ASIGNAR PLAN
+  // CREAR / Asignar condicion
   // =========================
   const asignarMutation = useMutation({
     mutationFn: async () => {
@@ -109,19 +109,19 @@ function UserPlans() {
       );
     },
     onSuccess: () => {
-      toast.success("Plan asignado correctamente");
+      toast.success("Condicion asignada correctamente");
       resetForm();
       queryClient.invalidateQueries({ queryKey: ["user-plans", id] });
     },
     onError: (error) => {
       const msg =
-        error?.response?.data?.message || "Error al asignar el plan";
+        error?.response?.data?.message || "Error al asignar la condicion";
       toast.error(msg);
     },
   });
 
   // =========================
-  // EDITAR PLAN ACTUAL
+  // Editar condicion actual
   // =========================
   const editarMutation = useMutation({
     mutationFn: async () => {
@@ -132,13 +132,13 @@ function UserPlans() {
       );
     },
     onSuccess: () => {
-      toast.success("Plan actualizado correctamente");
+      toast.success("Condicion actualizada correctamente");
       resetForm();
       queryClient.invalidateQueries({ queryKey: ["user-plans", id] });
     },
     onError: (error) => {
       const msg =
-        error?.response?.data?.message || "Error al actualizar el plan";
+        error?.response?.data?.message || "Error al actualizar la condicion";
       toast.error(msg);
     },
   });
@@ -152,12 +152,12 @@ const activarMutation = useMutation({
     );
   },
   onSuccess: () => {
-    toast.success("Plan activado");
+    toast.success("Condicion activada");
     queryClient.invalidateQueries({ queryKey: ["user-plans", id] });
   },
   onError: (error) => {
     const msg =
-      error?.response?.data?.message || "Error al activar el plan";
+      error?.response?.data?.message || "Error al activar la condicion";
     toast.error(msg);
   },
 });
@@ -177,12 +177,12 @@ const activarMutation = useMutation({
       );
     },
     onSuccess: () => {
-      toast.success("Plan desactivado");
+      toast.success("Condicion desactivada");
       queryClient.invalidateQueries({ queryKey: ["user-plans", id] });
     },
     onError: (error) => {
       const msg =
-        error?.response?.data?.message || "Error al desactivar el plan";
+        error?.response?.data?.message || "Error al desactivar la condicion";
       toast.error(msg);
     },
   });
@@ -206,12 +206,12 @@ const activarMutation = useMutation({
 
   const validateForm = () => {
     if (!planId || Number(planId) <= 0) {
-      toast.error("Seleccioná un plan válido");
+      toast.error("SeleccionÃ¡ un plan vÃ¡lido");
       return false;
     }
 
     if (!fechaInicio) {
-      toast.error("Ingresá fecha de inicio");
+      toast.error("IngresÃ¡ fecha de inicio");
       return false;
     }
 
@@ -242,7 +242,7 @@ const activarMutation = useMutation({
     <AppLayout>
       <div className="p-6 space-y-6">
         <div>
-          <h1 className="text-2xl font-bold">Administración de Planes</h1>
+          <h1 className="text-2xl font-bold">AdministraciÃ³n de Planes</h1>
           <p className="text-sm text-slate-500 mt-1">
             Cliente: {isLoadingUser ? "Cargando..." : `${userData?.nombre || ""} ${userData?.apellido || ""}`.trim()}
 
@@ -250,12 +250,12 @@ const activarMutation = useMutation({
         </div>
         <Card className="p-4 space-y-4">
           <h2 className="font-semibold">
-            Planes del usuario {isLoadingUser ? "" : `- ${clientName}`}
+            Condiciones del cliente {isLoadingUser ? "" : `- ${clientName}`}
           </h2>
           {isLoading || isFetching ? (
             <p>Cargando...</p>
           ) : userPlans.length === 0 ? (
-            <p>No tiene planes asignados</p>
+            <p>No tiene condiciones asignadas</p>
           ) : (
             <div className="space-y-3">
               {userPlans.map((p) => (
@@ -265,10 +265,10 @@ const activarMutation = useMutation({
                 >
                   <div>
                     <p className="font-medium">
-                      {p.plan?.nombre || "Plan sin nombre"}
+                      {p.plan?.nombre || "Condicion sin nombre"}
                     </p>
                     <p className="text-sm text-gray-500">
-                      {p.fechaInicio || "Sin inicio"} → {p.fechaFin || "Sin fin"}
+                      {p.fechaInicio || "Sin inicio"} â†’ {p.fechaFin || "Sin fin"}
                     </p>
                   </div>
 
@@ -309,17 +309,17 @@ const activarMutation = useMutation({
 
         <Card className="p-4 space-y-4">
           <h2 className="font-semibold">
-            {editingPlanId ? "Editar plan actual" : "Asignar nuevo plan"}
+            {editingPlanId ? "Editar condicion actual" : "Asignar nueva condicion"}
           </h2>
 
           <div className="space-y-2">
-            <Label>Plan</Label>
+            <Label>Condicion</Label>
             <select
               className="w-full border rounded p-2"
               value={planId}
               onChange={(e) => setPlanId(e.target.value)}
             >
-              <option value="">Seleccionar plan</option>
+              <option value="">Seleccionar condicion</option>
               {planes.map((p) => (
                 <option
                   key={p.idPlan ?? p.idPLan}
@@ -363,7 +363,7 @@ const activarMutation = useMutation({
           </div>
           <div className="flex items-center gap-2">
             <Button onClick={handleSubmit} disabled={isSubmitting}>
-              {editingPlanId ? "Guardar cambios" : "Asignar plan"}
+              {editingPlanId ? "Guardar cambios" : "Asignar condicion"}
             </Button>
 
             {editingPlanId && (

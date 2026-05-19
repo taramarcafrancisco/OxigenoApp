@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { cn } from "@/lib/utils";
@@ -16,14 +16,14 @@ import {
 
 const userMenuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', page: 'Dashboard' },
-  { icon: CreditCard, label: 'Mi Plan', page: 'MyPlan' },
-  { icon: BarChart3, label: 'Rutina', page: 'Usage' },
+  { icon: CreditCard, label: 'Mi Cuenta', page: 'MyPlan' },
+  { icon: BarChart3, label: 'Catalogo', page: 'Usage' },
 ];
 
 const adminMenuItems = [
   { icon: Shield, label: 'Admin Dashboard', page: 'AdminDashboard' },
   { icon: Users, label: 'Clientes', page: 'Clients' },
-  { icon: FileText, label: 'Gestión Planes', page: 'ManagePlans' },
+  { icon: FileText, label: 'Condiciones comerciales', page: 'ManagePlans' },
 ];
 
 export default function Sidebar({ user, isAdmin }) {
@@ -106,10 +106,10 @@ export default function Sidebar({ user, isAdmin }) {
         <Link to={createPageUrl('Dashboard')} className="flex items-center gap-3">
           <img
             src= {logo}
-            alt="oxigeno Logo"
+            alt="FerreManager Logo"
             className="w-10 h-10 object-contain"
           />
-          <span className="text-xl font-semibold text-white tracking-tight">oxigeno</span>
+          <span className="text-xl font-semibold text-white tracking-tight">FerreManager</span>
         </Link>
       </div>
 
@@ -127,7 +127,7 @@ export default function Sidebar({ user, isAdmin }) {
         {isAdmin && (
           <div className="pt-4 border-t border-white/10">
             <p className="px-4 text-xs font-semibold text-zinc-500 uppercase tracking-[0.18em] mb-3">
-              Administración
+              Administracion
             </p>
             {adminMenuItems.map((item) => (
               <MenuItem key={item.page} item={item} />
@@ -147,7 +147,7 @@ export default function Sidebar({ user, isAdmin }) {
               {user?.email || 'Usuario'}
             </p>
             <p className="text-xs text-zinc-500">
-              {isAdmin ? 'Administrador' : 'Usuario'}
+              {isAdmin ? 'Administrador' : 'Cliente'}
             </p>
           </div>
         </div>
@@ -155,3 +155,4 @@ export default function Sidebar({ user, isAdmin }) {
     </aside>
   );
 }
+

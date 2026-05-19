@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { Badge } from "../../components/ui/badge";
@@ -27,7 +27,7 @@ export default function RecentQueries({ queries = [], isLoading }) {
   if (isLoading) {
     return (
       <div className="bg-white rounded-2xl p-6 border border-slate-100 shadow-md">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Consultas recientes</h3>
+        <h3 className="text-lg font-semibold text-slate-900 mb-4">movimientos recientes</h3>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
             <div key={i} className="animate-pulse flex items-start gap-4 p-3">
@@ -46,13 +46,13 @@ export default function RecentQueries({ queries = [], isLoading }) {
   if (queries.length === 0) {
     return (
       <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border-2 border-slate-200 dark:border-slate-700 shadow-md hover:shadow-lg transition-all duration-300">
-        <h3 className="text-lg font-semibold text-slate-900 mb-4">Consultas recientes</h3>
+        <h3 className="text-lg font-semibold text-slate-900 mb-4">movimientos recientes</h3>
         <div className="text-center py-8">
           <div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <MapPin className="w-8 h-8 text-slate-400" />
           </div>
-          <p className="text-slate-600 font-medium">Sin consultas aún</p>
-          <p className="text-sm text-slate-500 mt-1">Tus consultas aparecerán aquí</p>
+          <p className="text-slate-600 font-medium">Sin movimientos aÃºn</p>
+          <p className="text-sm text-slate-500 mt-1">Tus movimientos aparecerÃ¡n aquÃ­</p>
         </div>
       </div>
     );
@@ -60,7 +60,7 @@ export default function RecentQueries({ queries = [], isLoading }) {
 
   return (
     <div className="bg-white rounded-2xl p-6 border border-slate-100">
-      <h3 className="text-lg font-semibold text-slate-900 mb-4">Consultas recientes</h3>
+      <h3 className="text-lg font-semibold text-slate-900 mb-4">movimientos recientes</h3>
       <div className="space-y-3">
         {queries.slice(0, 5).map((query) => {
           const status = statusConfig[query.status] || statusConfig.pending;

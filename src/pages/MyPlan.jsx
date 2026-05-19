@@ -4,27 +4,25 @@ import {
   BadgeCheck,
   CalendarDays,
   ClipboardList,
-  Dumbbell,
-  Flame,
+  Hammer,
   Mail,
+  Package,
   Phone,
   ShieldCheck,
   Target,
 } from "lucide-react";
 
 import AppLayout from "../components/app/AppLayout";
+import { Badge } from "../components/ui/badge";
+import { Card } from "../components/ui/card";
 import { PlansApi } from "../api/PlansApi";
 import { RutinasApi } from "../api/RutinasApi";
 import { UsersApi } from "../api/users";
-import { Badge } from "../components/ui/badge";
-import { Card } from "../components/ui/card";
 
 function formatDate(value) {
   if (!value) return "-";
-
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-
   return date.toLocaleDateString("es-AR");
 }
 
@@ -63,10 +61,10 @@ function MyPlanContent() {
   });
 
   const {
-    data: routine,
-    isLoading: loadingRoutine,
-    isError: isRoutineError,
-    error: routineError,
+    data: catalog,
+    isLoading: loadingCatalog,
+    isError: isCatalogError,
+    error: catalogError,
   } = useQuery({
     queryKey: ["my-routine"],
     queryFn: RutinasApi.getMyRoutine,
@@ -97,11 +95,11 @@ function MyPlanContent() {
           userPlan?.nombre ||
           userPlan?.plan?.nombre ||
           fullPlan?.nombre ||
-          "Plan sin nombre",
+          "Cuenta comercial sin nombre",
         descripcion:
           fullPlan?.descripcion ??
           userPlan?.descripcion ??
-          "Plan asignado a tu cuenta",
+          "Cuenta comercial asignada",
         precio: fullPlan?.precio ?? userPlan?.precio ?? 0,
         consultas: fullPlan?.consultas ?? userPlan?.consultas ?? 0,
         activo: (userPlan?.activo ?? true) && !expired,
@@ -114,7 +112,6 @@ function MyPlanContent() {
 
   const currentPlan = useMemo(() => {
     if (!assignedPlans.length) return null;
-
     const activePlans = assignedPlans.filter((plan) => plan.activo);
     const source = activePlans.length ? activePlans : assignedPlans;
 
@@ -125,12 +122,12 @@ function MyPlanContent() {
     })[0];
   }, [assignedPlans]);
 
-  const exercises = routine?.ejercicios ?? [];
+  const products = catalog?.ejercicios ?? [];
   const firstName =
     user?.nombre?.trim()?.split(/\s+/)?.[0] ||
     user?.full_name?.trim()?.split(/\s+/)?.[0] ||
     user?.email ||
-    "Alumno";
+    "Cliente";
 
   const isLoading = loadingUser || loadingPlans;
   const isError = isUserError || isPlansError;
@@ -149,7 +146,7 @@ function MyPlanContent() {
     return (
       <div className="mx-auto max-w-6xl">
         <Card className="border-red-500/20 bg-red-500/10 p-6">
-          <p className="font-semibold text-red-300">Error cargando tu plan</p>
+          <p className="font-semibold text-red-300">Error cargando tu cuenta</p>
           <p className="mt-1 text-sm text-red-200">
             {String(userError?.message || plansError?.message || "Error desconocido")}
           </p>
@@ -161,29 +158,28 @@ function MyPlanContent() {
   return (
     <div className="mx-auto max-w-6xl space-y-6">
       <section className="relative overflow-hidden rounded-[2rem] border border-orange-500/10 bg-gradient-to-br from-zinc-950 via-zinc-900 to-black p-6 shadow-[0_24px_80px_rgba(0,0,0,0.35)] md:p-8">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(249,115,22,0.16),transparent_28%),radial-gradient(circle_at_bottom_left,rgba(234,179,8,0.10),transparent_30%)]" />
         <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-orange-500/20 bg-orange-500/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] text-orange-300">
-              <Dumbbell className="h-4 w-4" />
-              Mi progreso
+              <Hammer className="h-4 w-4" />
+              Mi cuenta ferretera
             </div>
             <h1 className="text-3xl font-bold tracking-tight text-white md:text-4xl">
               Hola, {firstName}
             </h1>
             <p className="mt-2 max-w-2xl text-zinc-400">
-              Aca tenes tu plan asignado, el detalle de tu rutina actual y datos
-              clave para seguir tu entrenamiento de forma clara.
+              Aca tenes tu cuenta comercial, catalogo asignado y datos utiles
+              para seguir tus compras y pedidos.
             </p>
           </div>
 
           <div className="grid min-w-[280px] grid-cols-2 gap-3">
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
               <div className="mb-2 flex items-center gap-2 text-sm text-zinc-400">
-                <Flame className="h-4 w-4 text-orange-400" />
-                Ejercicios
+                <Package className="h-4 w-4 text-orange-400" />
+                Productos
               </div>
-              <p className="text-2xl font-bold text-white">{exercises.length}</p>
+              <p className="text-2xl font-bold text-white">{products.length}</p>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
@@ -192,16 +188,16 @@ function MyPlanContent() {
                 Estado
               </div>
               <p className="text-2xl font-bold text-white">
-                {currentPlan?.activo ? "Activo" : "Sin plan"}
+                {currentPlan?.activo ? "Activo" : "Sin cuenta"}
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {(isRoutineError || routineError) && (
+      {isCatalogError && (
         <Card className="border-red-500/20 bg-red-500/10 p-4 text-red-200">
-          No se pudo cargar tu rutina: {routineError?.message || "Error"}
+          No se pudo cargar tu catalogo: {catalogError?.message || "Error"}
         </Card>
       )}
 
@@ -209,14 +205,14 @@ function MyPlanContent() {
         <Card className="border-orange-500/10 bg-zinc-950/90 p-6 xl:col-span-2">
           <div className="mb-4 flex items-center gap-2">
             <BadgeCheck className="h-5 w-5 text-orange-400" />
-            <h2 className="text-xl font-semibold text-white">Plan asignado</h2>
+            <h2 className="text-xl font-semibold text-white">Cuenta asignada</h2>
           </div>
 
           {!currentPlan ? (
             <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-5">
-              <p className="text-lg font-semibold text-white">Sin plan asignado</p>
+              <p className="text-lg font-semibold text-white">Sin cuenta asignada</p>
               <p className="mt-2 text-sm text-zinc-400">
-                Todavia no tenes una membresia activa cargada en el sistema.
+                Todavia no tenes una cuenta comercial activa cargada en el sistema.
               </p>
             </div>
           ) : (
@@ -313,7 +309,7 @@ function MyPlanContent() {
             <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
               <div className="mb-1 flex items-center gap-2 text-sm text-zinc-400">
                 <BadgeCheck className="h-4 w-4 text-orange-300" />
-                Planes asignados
+                Cuentas asignadas
               </div>
               <p className="text-sm font-medium text-white">{assignedPlans.length}</p>
             </div>
@@ -324,59 +320,52 @@ function MyPlanContent() {
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <Card className="border-orange-500/10 bg-zinc-950/90 p-6 xl:col-span-2">
           <div className="mb-4 flex items-center gap-2">
-            <Dumbbell className="h-5 w-5 text-orange-400" />
-            <h2 className="text-xl font-semibold text-white">Mi rutina</h2>
+            <Hammer className="h-5 w-5 text-orange-400" />
+            <h2 className="text-xl font-semibold text-white">Mi catalogo</h2>
           </div>
 
-          {loadingRoutine ? (
-            <p className="text-zinc-400">Cargando rutina...</p>
-          ) : !routine ? (
+          {loadingCatalog ? (
+            <p className="text-zinc-400">Cargando catalogo...</p>
+          ) : !catalog ? (
             <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-5">
-              <p className="text-lg font-semibold text-white">Sin rutina asignada</p>
+              <p className="text-lg font-semibold text-white">Sin catalogo asignado</p>
               <p className="mt-2 text-sm text-zinc-400">
-                Todavia no tenes una rutina cargada.
+                Todavia no tenes un catalogo cargado.
               </p>
             </div>
           ) : (
             <div className="space-y-4">
               <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-5">
                 <h3 className="text-2xl font-bold text-white">
-                  {routine.nombre || "Rutina personalizada"}
+                  {catalog.nombre || "Lista comercial personalizada"}
                 </h3>
                 <p className="mt-2 text-sm text-zinc-400">
-                  {routine.objetivo || "Rutina activa asignada para tu entrenamiento."}
+                  {catalog.objetivo || "Catalogo activo para tu abastecimiento."}
                 </p>
               </div>
 
               <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                 <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
-                  <p className="text-sm text-zinc-400">Nivel</p>
+                  <p className="text-sm text-zinc-400">Rubro</p>
                   <p className="mt-1 text-lg font-semibold text-orange-300">
-                    {routine.nivel || "-"}
+                    {catalog.nivel || "-"}
                   </p>
                 </div>
 
                 <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
-                  <p className="text-sm text-zinc-400">Dias</p>
+                  <p className="text-sm text-zinc-400">Dias de entrega</p>
                   <p className="mt-1 text-lg font-semibold text-white">
-                    {routine.dias || "-"}
+                    {catalog.dias || "-"}
                   </p>
                 </div>
 
                 <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
-                  <p className="text-sm text-zinc-400">Ejercicios</p>
+                  <p className="text-sm text-zinc-400">Productos</p>
                   <p className="mt-1 text-lg font-semibold text-white">
-                    {exercises.length}
+                    {products.length}
                   </p>
                 </div>
               </div>
-
-              {routine.observaciones && (
-                <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                  <p className="mb-2 text-sm font-semibold text-white">Observaciones</p>
-                  <p className="text-sm text-zinc-300">{routine.observaciones}</p>
-                </div>
-              )}
             </div>
           )}
         </Card>
@@ -389,61 +378,61 @@ function MyPlanContent() {
 
           <div className="space-y-4">
             <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
-              <p className="text-sm text-zinc-400">Objetivo</p>
+              <p className="text-sm text-zinc-400">Necesidad</p>
               <p className="mt-1 text-sm font-medium text-white">
-                {routine?.objetivo || "Sin objetivo cargado"}
+                {catalog?.objetivo || "Sin necesidad cargada"}
               </p>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
-              <p className="text-sm text-zinc-400">Nivel actual</p>
+              <p className="text-sm text-zinc-400">Rubro actual</p>
               <p className="mt-1 text-sm font-medium text-white">
-                {routine?.nivel || "-"}
+                {catalog?.nivel || "-"}
               </p>
             </div>
 
             <div className="rounded-2xl border border-white/10 bg-zinc-900/70 p-4">
               <p className="text-sm text-zinc-400">Frecuencia</p>
               <p className="mt-1 text-sm font-medium text-white">
-                {routine?.dias || "-"}
+                {catalog?.dias || "-"}
               </p>
             </div>
           </div>
         </Card>
       </div>
 
-      {exercises.length > 0 && (
+      {products.length > 0 && (
         <Card className="border-orange-500/10 bg-zinc-950/90 p-6">
           <div className="mb-4 flex items-center gap-2">
             <ClipboardList className="h-5 w-5 text-orange-400" />
             <h2 className="text-xl font-semibold text-white">
-              Detalle de la rutina
+              Detalle del catalogo
             </h2>
           </div>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {exercises.map((exercise, index) => (
+            {products.map((product, index) => (
               <div
-                key={exercise.idRutinaEjercicio || index}
+                key={product.idRutinaEjercicio || index}
                 className="rounded-2xl border border-white/10 bg-black/30 p-4"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-lg font-semibold text-white">
-                      {typeof exercise === "string" ? exercise : exercise.ejercicio}
+                      {typeof product === "string" ? product : product.ejercicio}
                     </p>
 
-                    {typeof exercise !== "string" && (
+                    {typeof product !== "string" && (
                       <div className="mt-3 space-y-1 text-sm text-zinc-400">
-                        <p>Series: {exercise.series ?? "-"}</p>
-                        <p>Repeticiones: {exercise.repeticiones ?? "-"}</p>
-                        <p>Descanso: {exercise.descanso ?? "-"}</p>
+                        <p>Presentacion: {product.series ?? "-"}</p>
+                        <p>Cantidad sugerida: {product.repeticiones ?? "-"}</p>
+                        <p>Ubicacion: {product.descanso ?? "-"}</p>
                       </div>
                     )}
                   </div>
 
                   <span className="rounded-full border border-orange-500/20 bg-orange-500/10 px-2 py-1 text-xs text-orange-300">
-                    #{exercise.orden ?? index + 1}
+                    #{product.orden ?? index + 1}
                   </span>
                 </div>
               </div>

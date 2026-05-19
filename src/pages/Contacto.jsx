@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+﻿import React, { useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import AppLayout from "@/components/app/AppLayout";
@@ -17,7 +17,7 @@ function ContactoContent() {
     [location.search]
   );
 
-  const motivoParam = searchParams.get("motivo") || "ampliacion-plan";
+  const motivoParam = searchParams.get("motivo") || "ampliacion-cuenta";
   const state = location.state || {};
 
   const [form, setForm] = useState({
@@ -28,7 +28,7 @@ function ContactoContent() {
     motivo: motivoParam,
     mensaje:
       state.mensaje ||
-      "Hola, quiero solicitar una ampliación de consultas o un cambio a un plan superior.",
+      "Hola, quiero solicitar una ampliaciÃ³n de movimientos o un cambio de condicion comercial.",
   });
 
   const onChange = (e) => {
@@ -41,21 +41,21 @@ function ContactoContent() {
 
   const abrirMail = () => {
     if (!form.nombre.trim()) {
-      toast.error("Ingresá tu nombre");
+      toast.error("IngresÃ¡ tu nombre");
       return;
     }
 
     if (!form.email.trim()) {
-      toast.error("Ingresá tu email");
+      toast.error("IngresÃ¡ tu email");
       return;
     }
 
-    const destinatario = "contacto@oxigeno.com.ar";
-    const subject = encodeURIComponent("Solicitud de ampliación de consultas / cambio de plan");
+    const destinatario = "contacto@ferremanager.com.ar";
+    const subject = encodeURIComponent("Solicitud de ampliaciÃ³n de movimientos / cambio de condicion comercial");
     const body = encodeURIComponent(
 `Nombre: ${form.nombre}
 Email: ${form.email}
-Teléfono: ${form.telefono}
+TelÃ©fono: ${form.telefono}
 Producto: ${form.producto}
 Motivo: ${form.motivo}
 
@@ -64,17 +64,17 @@ ${form.mensaje}`
     );
 
     window.location.href = `mailto:${destinatario}?subject=${subject}&body=${body}`;
-    toast.success("Se abrió tu cliente de correo.");
+    toast.success("Se abriÃ³ tu cliente de correo.");
   };
 
   const abrirWhatsapp = () => {
-    const numero = "541148046755"; // <-- cambiá este número
+    const numero = "541148046755"; // <-- cambiÃ¡ este nÃºmero
     const texto = encodeURIComponent(
 `Hola, soy ${form.nombre || "un cliente"}.
-Quiero solicitar una ampliación de consultas o un cambio de plan.
+Quiero solicitar una ampliaciÃ³n de movimientos o un cambio de condicion comercial.
 
 Email: ${form.email}
-Teléfono: ${form.telefono}
+TelÃ©fono: ${form.telefono}
 Producto: ${form.producto}
 
 Mensaje:
@@ -92,7 +92,7 @@ ${form.mensaje}`
             Contacto comercial
           </h1>
           <p className="text-slate-500 mt-2 text-lg">
-            Solicitá más consultas o un cambio de plan
+            SolicitÃ¡ mÃ¡s movimientos o un cambio de condicion comercial
           </p>
         </div>
 
@@ -124,7 +124,7 @@ ${form.mensaje}`
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Teléfono
+                TelÃ©fono
               </label>
               <Input
                 name="telefono"
@@ -171,7 +171,7 @@ ${form.mensaje}`
               onChange={onChange}
               rows={7}
               className="w-full rounded-md border border-slate-200 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500"
-              placeholder="Escribí tu solicitud..."
+              placeholder="EscribÃ­ tu solicitud..."
             />
           </div>
 
@@ -207,13 +207,13 @@ ${form.mensaje}`
 
         <Card className="p-6">
           <h2 className="text-lg font-semibold text-slate-900 mb-3">
-            Otras vías de contacto
+            Otras vÃ­as de contacto
           </h2>
 
           <div className="space-y-3 text-sm text-slate-600">
             <div className="flex items-center gap-2">
               <Mail className="w-4 h-4 text-cyan-600" />
-              <span>contacto@oxigeno.com.ar</span>
+              <span>contacto@ferremanager.com.ar</span>
             </div>
 
             <div className="flex items-center gap-2">
@@ -223,7 +223,7 @@ ${form.mensaje}`
 
             <div className="flex items-center gap-2">
               <Send className="w-4 h-4 text-cyan-600" />
-              <span>Atención comercial para ampliación de consultas y planes</span>
+              <span>AtenciÃ³n comercial para ampliaciÃ³n de movimientos y condiciones</span>
             </div>
           </div>
         </Card>
